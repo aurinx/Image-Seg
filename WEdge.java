@@ -3,9 +3,9 @@
 public class WEdge implements Comparable<WEdge> {
 
     /** Starting vertex of an WEdge. */
-    private Vertex source;
+    private GVertex source;
     /** Ending vertex of an edge. */
-    private Vertex end;
+    private GVertex end;
     /** Whether or not the edge is directed. */
     private boolean directed;
     /**The weight of the edge */
@@ -15,7 +15,7 @@ public class WEdge implements Comparable<WEdge> {
      *  @param v the end
      *  @param inweight the input weight
      */
-    public WEdge(Vertex u, Vertex v, double inweight) {
+    public WEdge(GVertex u, GVertex v, double inweight) {
         this.source = u;
         this.end = v;
         this.directed = false;
@@ -28,7 +28,7 @@ public class WEdge implements Comparable<WEdge> {
      *  @param dir true if directed, false otherwise
      *  @param inweight the input weight
      */
-    public WEdge(Vertex u, Vertex v, boolean dir, double inweight) {
+    public WEdge(GVertex u, GVertex v, boolean dir, double inweight) {
         this.source = u;
         this.end = v;
         this.directed = dir;
@@ -46,21 +46,21 @@ public class WEdge implements Comparable<WEdge> {
      *  @param v the vertex
      *  @return true if source or end, false otherwise
      */
-    public boolean isIncident(Vertex v) {
+    public boolean isIncident(GVertex v) {
         return this.source.equals(v) || this.end.equals(v);
     }
 
     /** Get the starting endpoint vertex.
      *  @return the vertex
      */
-    public Vertex source() {
+    public GVertex source() {
         return this.source;
     }
 
     /** Get the ending endpoint vertex.
      *  @return the vertex
      */
-    public Vertex end() {
+    public GVertex end() {
         return this.end;
     }
 
@@ -107,5 +107,7 @@ public class WEdge implements Comparable<WEdge> {
     public int hashCode() {
         return this.toString().hashCode();
     }
-
+    public int compareTo(WEdge other) {
+        return (int)(this.weight - other.weight);
+    }
 }
