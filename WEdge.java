@@ -1,33 +1,38 @@
 /** Implementation of an edge class (for graphs), could be directed or not.
  */
-public class Edge {
+public class WEdge implements Comparable<WEdge> {
 
-    /** Starting vertex of an edge. */
+    /** Starting vertex of an WEdge. */
     private Vertex source;
     /** Ending vertex of an edge. */
     private Vertex end;
     /** Whether or not the edge is directed. */
     private boolean directed;
-
+    /**The weight of the edge */
+    private double weight;
     /** Create an undirected edge.
      *  @param u the start
      *  @param v the end
+     *  @param inweight the input weight
      */
-    public Edge(Vertex u, Vertex v) {
+    public WEdge(Vertex u, Vertex v, double inweight) {
         this.source = u;
         this.end = v;
         this.directed = false;
+        this.weight = inweight;
     }
 
     /** Create an edge.
      *  @param u the start
      *  @param v the end
      *  @param dir true if directed, false otherwise
+     *  @param inweight the input weight
      */
-    public Edge(Vertex u, Vertex v, boolean dir) {
+    public WEdge(Vertex u, Vertex v, boolean dir, double inweight) {
         this.source = u;
         this.end = v;
         this.directed = dir;
+        this.weight = weight;
     }
 
     /** Is the edge directed.
@@ -59,11 +64,18 @@ public class Edge {
         return this.end;
     }
 
+    /** Get the weight of an edge.
+     *  @return the edge weight;
+     */
+    public double weight() {
+        return this.weight;
+    }
+
     /** Create a string representation of the edge.
      *  @return the string as (source,end)
      */
     public String toString() {
-        return "(" + this.source + "," + this.end + ")";
+        return "(" + this.source + "," + this.end + "," + this.weight + ")";
     }
 
     /** Check if two edges are the same.
@@ -71,8 +83,8 @@ public class Edge {
      *  @return true if directedness and endpoints match, false otherwise
      */
     public boolean equals(Object other) {
-        if (other instanceof Edge) {
-            Edge e = (Edge) other;
+        if (other instanceof WEdge) {
+            WEdge e = (WEdge) other;
             if (this.directed != e.directed) {
                 return false;
             }
