@@ -11,7 +11,8 @@ public class GraphTest {
 
     @Before
     public void setupGraph() {
-        g = new WGraphP4<Character>(100);
+
+        g = new WGraphP4<Character>();
         v = new GVertex<Character>('v', g.nextID());
         u = new GVertex<Character>('u', g.nextID());
         x = new GVertex<Character>('x', g.nextID());

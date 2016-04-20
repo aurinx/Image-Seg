@@ -13,12 +13,9 @@ public class WGraphP4<VT> implements WGraph<VT> {
   // No real constructor neede
 
   // Initialize the graph with max n vertices
-  public WGraphP4(int n) {
-    vertedges = new ArrayList<ArrayList<WEdge<VT>>>(n);
+  public WGraphP4() {
+    vertedges = new ArrayList<ArrayList<WEdge<VT>>>();
     //add list to each vertex
-    for (int i=0; i<n; i++)  {
-        vertedges.add(new ArrayList<WEdge<VT>>());
-    }
     verts = new ArrayList<GVertex<VT>>();
     numEdge = 0;
     nextID = 0;
@@ -37,17 +34,15 @@ public class WGraphP4<VT> implements WGraph<VT> {
   }
   //add vertex
   public boolean addVertex(VT data) {
-      if (this.verts.size() == this.vertedges.size()) //see if too many vertex
-          return false;
       this.verts.add(new GVertex(data, nextID++)); //add vertex with data, and next id 
+      vertedges.add(nextID,new ArrayList<WEdge<VT>>());
       return true;
   }
 
   public boolean addVertex(GVertex<VT> v) {
-      if (this.verts.size() == this.vertedges.size()) // see if too many
-          return false;
       if (this.verts.contains(v)) // see if vertex already there
           return false;
+      vertedges.add(v.id(),new ArrayList<WEdge<VT>>());
       this.verts.add(v); // add vertex to vertex list
       return true;
   }
