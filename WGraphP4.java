@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-class WGraphP4<VT> implements WGraph<VT> {
+public class WGraphP4<VT> implements WGraph<VT> {
 
 /**    private class Edge { // Doubly linked list node
       GVertex vertex; 
@@ -22,13 +22,13 @@ class WGraphP4<VT> implements WGraph<VT> {
   // No real constructor neede
 
   // Initialize the graph with max n vertices
-  void WGraphP4(int n) {
-    vertedges = new ArrayList<ArrayList<WEdge<VT>>>();
+  public WGraphP4(int n) {
+    vertedges = new ArrayList<ArrayList<WEdge<VT>>>(n);
     // List headers;
     for (int i=0; i<n; i++)  {
         vertedges.add(new ArrayList<WEdge<VT>>());
     }
-    verts = new ArrayList<GVertex<VT>>(n);
+    verts = new ArrayList<GVertex<VT>>();
     numEdge = 0;
     nextID = 0;
   }
@@ -37,7 +37,7 @@ class WGraphP4<VT> implements WGraph<VT> {
   // Return the current number of edges
   public int numEdges() { return numEdge; }
   // Return the number of vertices
-  public int nodeVerts() { return vertedges.size(); }
+  public int numVerts() { return verts.size(); }
 
 
   //get the next ID for vert

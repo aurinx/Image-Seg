@@ -3,9 +3,9 @@
 public class WEdge<VT> implements Comparable<WEdge> {
 
     /** Starting vertex of an WEdge. */
-    private GVertex source;
+    private GVertex<VT> source;
     /** Ending vertex of an edge. */
-    private GVertex end;
+    private GVertex<VT> end;
     /** Whether or not the edge is directed. */
     private boolean directed;
     /**The weight of the edge */
@@ -15,7 +15,7 @@ public class WEdge<VT> implements Comparable<WEdge> {
      *  @param v the end
      *  @param inweight the input weight
      */
-    public WEdge(GVertex u, GVertex v, double inweight) {
+    public WEdge(GVertex<VT> u, GVertex<VT> v, double inweight) {
         this.source = u;
         this.end = v;
         this.directed = false;
@@ -28,7 +28,7 @@ public class WEdge<VT> implements Comparable<WEdge> {
      *  @param dir true if directed, false otherwise
      *  @param inweight the input weight
      */
-    public WEdge(GVertex u, GVertex v, boolean dir, double inweight) {
+    public WEdge(GVertex<VT> u, GVertex<VT> v, boolean dir, double inweight) {
         this.source = u;
         this.end = v;
         this.directed = dir;
@@ -46,21 +46,21 @@ public class WEdge<VT> implements Comparable<WEdge> {
      *  @param v the vertex
      *  @return true if source or end, false otherwise
      */
-    public boolean isIncident(GVertex v) {
+    public boolean isIncident(GVertex<VT> v) {
         return this.source.equals(v) || this.end.equals(v);
     }
 
     /** Get the starting endpoint vertex.
      *  @return the vertex
      */
-    public GVertex source() {
+    public GVertex<VT> source() {
         return this.source;
     }
 
     /** Get the ending endpoint vertex.
      *  @return the vertex
      */
-    public GVertex end() {
+    public GVertex<VT> end() {
         return this.end;
     }
 
