@@ -5,29 +5,17 @@ import java.util.LinkedList;
 
 public class WGraphP4<VT> implements WGraph<VT> {
 
-/**    private class Edge { // Doubly linked list node
-      GVertex vertex; 
-      double weight;
-      Edge prev, next;
-    }
-    Edge(GVertex v, double w, Edge p, Edge n) {
-      vertex = v;
-      weight = w;
-      prev = p;
-      next = n;
-    }
-   */
-  private int nextID;
-  private ArrayList <ArrayList <WEdge<VT>>> vertedges;
-  private ArrayList<GVertex<VT>> verts;
-  private int numEdge;
+  private int nextID;  // next id for vertex
+  private ArrayList <ArrayList <WEdge<VT>>>  vertedges;  //list of edgelists for each vertex
+  private ArrayList<GVertex<VT>> verts; // list of vertex
+  private int numEdge; // num of edges
 
   // No real constructor neede
 
   // Initialize the graph with max n vertices
   public WGraphP4(int n) {
     vertedges = new ArrayList<ArrayList<WEdge<VT>>>(n);
-    // List headers;
+    //add list to each vertex
     for (int i=0; i<n; i++)  {
         vertedges.add(new ArrayList<WEdge<VT>>());
     }
@@ -48,49 +36,55 @@ public class WGraphP4<VT> implements WGraph<VT> {
       return nextID++;
   }
   //add vertex
-  public boolean addVertex(Object data) {
-      if (this.verts.size() == this.vertedges.size())
+  public boolean addVertex(VT data) {
+      if (this.verts.size() == this.vertedges.size()) //see if too many vertex
           return false;
-      this.verts.add(new GVertex(data, nextID++));
+      this.verts.add(new GVertex(data, nextID++)); //add vertex with data, and next id 
       return true;
   }
 
   public boolean addVertex(GVertex<VT> v) {
-      if (this.verts.size() == this.vertedges.size())
+      if (this.verts.size() == this.vertedges.size()) // see if too many
           return false;
-      if (this.verts.contains(v))
+      if (this.verts.contains(v)) // see if vertex already there
           return false;
-      this.verts.add(v);
+      this.verts.add(v); // add vertex to vertex list
       return true;
   }
 
   public boolean addEdge(WEdge<VT> e) {
       boolean added = false;
       added = addEdge(e.source(), e.end(), e.weight());
-      if (added) {
-          added = addEdge(e.end(), e.source(), e.weight());
-          this.numEdge--;
-      }
       return added;
   }
 
   public boolean addEdge(GVertex<VT> v, GVertex<VT> u, double weight) {
       boolean success = true;
-      if(!this.verts.contains(v))
-          success = this.addVertex(v);
-      if(success && !this.verts.contains(u))
-          success = this.addVertex(u);
+      if(!this.verts.contains(v)) // if verts does not contain begin vertex yet
+          success = this.addVertex(v); //add vertex to vert
+      if(success && !this.verts.contains(u))//if verts does not contain end
+          success = this.addVertex(u);//add it
       if (!success)
           return false;
-      if (vertedges.get(v.id()) != null){
+      if (vertedges.get(v.id()) != null){ // if ths size of the arrlist at a vert is not 0
          int a = 0;
-         for (WEdge<VT> temp : vertedges.get(v.id())) {
+         for (WEdge<VT> temp : vertedges.get(v.id())) { // see if the dege is there
              if (temp.end() == u)
                  a = 1;
          }
-         if (a == 1)
+         if (a == 1) //if there return
              return false; //already there
-         vertedges.get(v.id()).add(new WEdge<VT>(v, u, weight));
+         vertedges.get(v.id()).add(new WEdge<VT>(v, u, weight)); //add edge to list
+      }
+      if (vertedges.get(u.id()) != null){ // do again because edge is undircetional
+         int b = 0;
+         for (WEdge<VT> temp2 : vertedges.get(u.id())) {
+             if (temp2.end() == v)
+                 b = 1;
+         }
+         if (b == 1)
+             return false; //already there
+         vertedges.get(u.id()).add(new WEdge<VT>(u, v, weight));
          this.numEdge++;
          return true;
       }
@@ -98,17 +92,17 @@ public class WGraphP4<VT> implements WGraph<VT> {
 
   }
   public boolean deleteEdge(GVertex<VT> v, GVertex<VT> u) {
-      if(this.verts.contains(v) && this.verts.contains(u)) {
+      if(this.verts.contains(v) && this.verts.contains(u)) {//see if both verts there
           int a = 0;
-          if(vertedges.get(v.id()) != null){
+          if(vertedges.get(v.id()) != null){//see if vertex edge list is there
               for (WEdge<VT> temp : vertedges.get(v.id())) {
                   if (temp.end() == u)
                       a = 1;
-                      vertedges.get(v.id()).remove(temp);
+                      vertedges.get(v.id()).remove(temp);//remove edge from list
               }
           }
           int b = 0;
-          if(vertedges.get(u.id()) != null){
+          if(vertedges.get(u.id()) != null){//do same for other edge direction
               for (WEdge<VT> temp1 : vertedges.get(u.id())) {
                   if (temp1.end() == v)
                       b = 1;
@@ -124,7 +118,7 @@ public class WGraphP4<VT> implements WGraph<VT> {
 
 
   public boolean areAdjacent(GVertex<VT> v, GVertex<VT> u) {
-      if(vertedges.get(v.id()) != null ){
+      if(vertedges.get(v.id()) != null ){//see if node is connected
           for (WEdge<VT> temp1 : vertedges.get(v.id())) {
               if (temp1.end() == u)
                   return true;
@@ -137,7 +131,7 @@ public class WGraphP4<VT> implements WGraph<VT> {
       ArrayList<GVertex<VT>> nbs = new ArrayList<GVertex<VT>>();
       int row = v.id();
       for (WEdge<VT> temp : vertedges.get(row)) {
-          nbs.add(temp.end());
+          nbs.add(temp.end());//add the end of each edge from a node
       }
       return nbs;
   }
