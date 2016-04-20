@@ -56,7 +56,7 @@ public class GraphTest {
         assertEquals(false, g.areAdjacent(x, u));
         assertEquals(false, g.areAdjacent(v, y));
     }
-/**
+
     @Test
     public void testIncidence() {
         g.addVertex(v);
@@ -108,5 +108,5 @@ public class GraphTest {
         assertEquals("[0]", g.neighbors(x).toString());
         assertEquals("[]", g.neighbors(y).toString());
     }
-*/
+
 }

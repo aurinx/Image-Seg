@@ -1,4 +1,7 @@
 import java.util.ArrayList;
+import java.util.List;
+import java.util.LinkedList;
+
 
 public class WGraphP4<VT> implements WGraph<VT> {
 
@@ -88,6 +91,7 @@ public class WGraphP4<VT> implements WGraph<VT> {
          if (a == 1)
              return false; //already there
          vertedges.get(v.id()).add(new WEdge<VT>(v, u, weight));
+         this.numEdge++;
          return true;
       }
       return false;
@@ -137,4 +141,47 @@ public class WGraphP4<VT> implements WGraph<VT> {
       }
       return nbs;
   }
+
+  public int degree (GVertex<VT> v) {
+      return this.neighbors(v).size();
+  }
+
+  public boolean areIncident(WEdge<VT> e, GVertex<VT> v) {
+      return e.source().equals(v) || e.end().equals(v);
+  }
+
+  public List<WEdge<VT>> allEdges() {
+      int nv = this.numVerts();
+      ArrayList<WEdge<VT>> edges = new ArrayList<WEdge<VT>>(nv);
+      for (ArrayList<WEdge<VT>> temp : vertedges) {
+          for (WEdge<VT> temp1 : temp) {
+              edges.add(new WEdge<VT>(temp1.source(), temp1.end(), temp1.weight()));
+          }
+      }
+      return edges;
+  }
+
+  public List<GVertex<VT>> allVertices() {
+      return this.verts;
+  }
+
+  public List<GVertex<VT>> depthFirst(GVertex<VT> v) {
+      ArrayList<GVertex<VT>> reaches = new ArrayList<GVertex<VT>>(this.numVerts());
+      LinkedList<GVertex<VT>> stack = new LinkedList<GVertex<VT>>();
+      boolean[] visited = new boolean[this.numVerts()];
+      stack.addFirst(v);
+      while(!stack.isEmpty()) {
+          v = stack.removeFirst();
+          reaches.add(v);
+          for (GVertex<VT> u: this.neighbors(v)) {
+              if (! visited[u.id()]) {
+                  visited[u.id()] = true;
+                  stack.addFirst(u);
+              }
+          }
+       }
+       return reaches;
+  }
+
+
 }
