@@ -1,98 +1,140 @@
-class WGraphP4 implements WGraph {
+import java.util.ArrayList;
 
-  private class Edge { // Doubly linked list node
-    int vertex, weight;
-    Edge prev, next;
+class WGraphP4<VT> implements WGraph<VT> {
 
-    Edge(int v, int w, Edge p, Edge n) {
+/**    private class Edge { // Doubly linked list node
+      GVertex vertex; 
+      double weight;
+      Edge prev, next;
+    }
+    Edge(GVertex v, double w, Edge p, Edge n) {
       vertex = v;
       weight = w;
       prev = p;
       next = n;
     }
-  }
-
-  private Edge[] nodeArray;
-  private Object[] nodeValues;
+   */
+  private int nextID;
+  private ArrayList <ArrayList <WEdge<VT>>> vertedges;
+  private ArrayList<GVertex<VT>> verts;
   private int numEdge;
 
-  // No real constructor needed
-  GraphL() {}
+  // No real constructor neede
 
-  // Initialize the graph with n vertices
-  void init(int n) {
-    nodeArray = new Edge[n];
+  // Initialize the graph with max n vertices
+  void WGraphP4(int n) {
+    vertedges = new ArrayList<ArrayList<WEdge<VT>>>();
     // List headers;
-    for (int i=0; i<n; i++) nodeArray[i] = new Edge(-1, -1, null, null);
-    nodeValues = new Object[n];
+    for (int i=0; i<n; i++)  {
+        vertedges.add(new ArrayList<WEdge<VT>>());
+    }
+    verts = new ArrayList<GVertex<VT>>(n);
     numEdge = 0;
+    nextID = 0;
   }
 
-  // Return the number of vertices
-  int nodeCount() { return nodeArray.length; }
 
   // Return the current number of edges
-  int edgeCount() { return numEdge; }
+  public int numEdges() { return numEdge; }
+  // Return the number of vertices
+  public int nodeVerts() { return vertedges.size(); }
 
-  // Get the value of node with index v
-  Object getValue(int v) { return nodeValues[v]; }
 
-  // Set the value of node with index v
-  void setValue(int v, Object val) { nodeValues[v] = val; }
-  
-  // Return the link in v's neighbor list that preceeds the
-  // one with w (or where it would be)
-  private Edge find (int v, int w) {
-    Edge curr = nodeArray[v];
-    while ((curr.next != null) && (curr.next.vertex < w))
-      curr = curr.next;
-    return curr;
+  //get the next ID for vert
+  public int nextID() {
+      return nextID++;
+  }
+  //add vertex
+  public boolean addVertex(Object data) {
+      if (this.verts.size() == this.vertedges.size())
+          return false;
+      this.verts.add(new GVertex(data, nextID++));
+      return true;
   }
 
-  // Adds a new edge from node v to node w with weight wgt
-  void addEdge(int v, int w, int wgt) {
-    if (wgt == 0) return; // Can't store weight of 0
-    Edge curr = find(v, w);
-    if ((curr.next != null) && (curr.next.vertex == w))
-      curr.next.weight = wgt;
-    else {
-      curr.next = new Edge(w, wgt, curr, curr.next);
-      if (curr.next.next != null) curr.next.next.prev = curr.next;
-    }
-    numEdge++;
+  public boolean addVertex(GVertex<VT> v) {
+      if (this.verts.size() == this.vertedges.size())
+          return false;
+      if (this.verts.contains(v))
+          return false;
+      this.verts.add(v);
+      return true;
   }
 
-  // Get the weight value for an edge
-  int weight(int v, int w) {
-    Edge curr = find(v, w);
-    if ((curr.next == null) || (curr.next.vertex != w)) return 0;
-    else return curr.next.weight;
+  public boolean addEdge(WEdge<VT> e) {
+      boolean added = false;
+      added = addEdge(e.source(), e.end(), e.weight());
+      if (added) {
+          added = addEdge(e.end(), e.source(), e.weight());
+          this.numEdge--;
+      }
+      return added;
   }
 
-  // Removes the edge from the graph.
-  void removeEdge(int v, int w) {
-    Edge curr = find(v, w);
-    if ((curr.next == null) || curr.next.vertex != w) return;
-    else {
-      curr.next = curr.next.next;
-      if (curr.next != null) curr.next.prev = curr;
-    }
-    numEdge--;
+  public boolean addEdge(GVertex<VT> v, GVertex<VT> u, double weight) {
+      boolean success = true;
+      if(!this.verts.contains(v))
+          success = this.addVertex(v);
+      if(success && !this.verts.contains(u))
+          success = this.addVertex(u);
+      if (!success)
+          return false;
+      if (vertedges.get(v.id()) != null){
+         int a = 0;
+         for (WEdge<VT> temp : vertedges.get(v.id())) {
+             if (temp.end() == u)
+                 a = 1;
+         }
+         if (a == 1)
+             return false; //already there
+         vertedges.get(v.id()).add(new WEdge<VT>(v, u, weight));
+         return true;
+      }
+      return false;
+
+  }
+  public boolean deleteEdge(GVertex<VT> v, GVertex<VT> u) {
+      if(this.verts.contains(v) && this.verts.contains(u)) {
+          int a = 0;
+          if(vertedges.get(v.id()) != null){
+              for (WEdge<VT> temp : vertedges.get(v.id())) {
+                  if (temp.end() == u)
+                      a = 1;
+                      vertedges.get(v.id()).remove(temp);
+              }
+          }
+          int b = 0;
+          if(vertedges.get(u.id()) != null){
+              for (WEdge<VT> temp1 : vertedges.get(u.id())) {
+                  if (temp1.end() == v)
+                      b = 1;
+                      vertedges.get(u.id()).remove(temp1);
+              }
+          }
+          if(a == 1 && b == 1)
+              this.numEdge--;
+              return true;
+      }
+      return false;
   }
 
-  // Returns true iff the graph has the edge
-  boolean hasEdge(int v, int w) { return weight(v, w) != 0; }
 
-  // Returns an array containing the indicies of the neighbors of v
-  int[] neighbors(int v) {
-    int cnt = 0;
-    Edge curr;
-    for (curr = nodeArray[v].next; curr != null; curr = curr.next)
-      cnt++;
-    int[] temp = new int[cnt];
-    cnt = 0;
-    for (curr = nodeArray[v].next; curr != null; curr = curr.next)
-      temp[cnt++] = curr.vertex;
-    return temp;
+  public boolean areAdjacent(GVertex<VT> v, GVertex<VT> u) {
+      if(vertedges.get(v.id()) != null ){
+          for (WEdge<VT> temp1 : vertedges.get(v.id())) {
+              if (temp1.end() == u)
+                  return true;
+          }
+      }
+      return false;
+  }
+
+  public ArrayList<GVertex<VT>> neighbors(GVertex<VT> v) {
+      ArrayList<GVertex<VT>> nbs = new ArrayList<GVertex<VT>>();
+      int row = v.id();
+      for (WEdge<VT> temp : vertedges.get(row)) {
+          nbs.add(temp.end());
+      }
+      return nbs;
   }
 }

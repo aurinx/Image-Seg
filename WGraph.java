@@ -30,7 +30,7 @@ public interface WGraph<VT> {
      *  @param v the vertex to add
      *  @return false if already there, true if added
      */
-    boolean addVertex(Vertex<VT> v);
+    boolean addVertex(GVertex<VT> v);
 
     /** Add a weighted edge, may also add the incident vertices. 
      *  @param e the edge to add
@@ -64,30 +64,30 @@ public interface WGraph<VT> {
      *  @param v the vertex source
      *  @return the neighboring vertices
      */
-    List<GVertex<VT>> neighbors(GVertex<VT> v);
+//    List<GVertex<VT>> neighbors(GVertex<VT> v);
 
     /** Return the number of edges incident to v.  
      *  @param v the vertex source
      *  @return the number of incident edges
      */
-    int degree(GVertex<VT> v);
+//    int degree(GVertex<VT> v);
 
     /** See if an edge and vertex are incident to each other.
      *  @param e the edge
      *  @param v the vertex to check
      *  @return true if v is an endpoint of edge e
      */
-    boolean areIncident(WEdge<VT> e, GVertex<VT> v);
+//    boolean areIncident(WEdge<VT> e, GVertex<VT> v);
 
     /** Return a list of all the edges.  
      *  @return the list
      */
-    List<WEdge<VT>> allEdges();
+//    List<WEdge<VT>> allEdges();
 
     /** Return a list of all the vertices.  
      *  @return the list
      */
-    List<GVertex<VT>> allVertices();
+//    List<GVertex<VT>> allVertices();
 
     /** Return a list of all the vertices that can be reached from v,
      *  in the order in which they would be visited in a depth-first
@@ -95,18 +95,18 @@ public interface WGraph<VT> {
      *  @param v the starting vertex
      *  @return the list of reachable vertices
      */
-    List<GVertex<VT>> depthFirst(GVertex<VT> v);
+//    List<GVertex<VT>> depthFirst(GVertex<VT> v);
 
     /** Return a list of all the edges incident on vertex v.  
      *  @param v the starting vertex
      *  @return the incident edges
      */
-    List<WEdge<VT>> incidentEdges(GVertex<VT> v);
+//    List<WEdge<VT>> incidentEdges(GVertex<VT> v);
 
     /** Return a list of edges in a minimum spanning forest by
      *  implementing Kruskal's algorithm using fast union/finds.
      *  @return a list of the edges in the minimum spanning forest
      */
-    List<WEdge<VT>> kruskals();
-    
+//    List<WEdge<VT>> kruskals();
+   
 }

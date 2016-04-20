@@ -1,6 +1,6 @@
 /** Implementation of an edge class (for graphs), could be directed or not.
  */
-public class WEdge implements Comparable<WEdge> {
+public class WEdge<VT> implements Comparable<WEdge> {
 
     /** Starting vertex of an WEdge. */
     private GVertex source;
