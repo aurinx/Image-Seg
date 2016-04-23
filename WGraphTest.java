@@ -1,13 +1,15 @@
 import org.junit.Test;
 import org.junit.Before;
+import java.util.List;
 import static org.junit.Assert.assertEquals;
-
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 /** Set of Junit tests for our Graph implementations.
  */
 public class WGraphTest {
     WGraphP4<Character> g;
     GVertex<Character> t, u, v, w, x, y, z;
-    WEdge<Character> a, b, c, d, e, f, h, i, j, k;
+    WEdge<Character> a, b, c, d, e, f, h, i, j, k,l;
 
     @Before
     public void setupGraph() {
@@ -85,7 +87,7 @@ public class WGraphTest {
         assertEquals(true, g.areAdjacent(t, w));
         assertEquals(true, g.areAdjacent(t, y));
         assertEquals(true, g.areAdjacent(y, x));
-        assertEquals(false, g.areAdjacent(x, u));
+        assertEquals(true, g.areAdjacent(x, u));
         assertEquals(false, g.areAdjacent(v, y));
         assertEquals(false, g.areAdjacent(w, v));
         assertEquals(false, g.areAdjacent(t, z));
@@ -136,7 +138,7 @@ public class WGraphTest {
         assertEquals(1, g.degree(x));
         assertEquals(0, g.degree(y));
         g.addEdge(d);
-        assertEquals(3, g.degree(v));
+        assertEquals(2, g.degree(v));
         assertEquals(2, g.degree(x));
     }
 
@@ -182,6 +184,7 @@ public class WGraphTest {
         assertEquals(7, g.numVerts());
         assertEquals(11, g.numEdges());
         //added properly so far
+        System.out.println("hello");
         assertEquals(true, g.deleteEdge(t, u));
         assertEquals(false, g.deleteEdge(t, z));
         assertEquals(false, g.deleteEdge(u, t)); // should this be false? are there two edges created by this case?
@@ -191,13 +194,13 @@ public class WGraphTest {
 
     @Test
     public void testAllEdges() {
-        g.addVertex(t);
-        g.addVertex(u);
         g.addVertex(v);
-        g.addVertex(w);
+        g.addVertex(u);
         g.addVertex(x);
         g.addVertex(y);
         g.addVertex(z);
+        g.addVertex(w);
+        g.addVertex(t);
         g.addEdge(a);
         g.addEdge(b);
         g.addEdge(c);
@@ -208,11 +211,13 @@ public class WGraphTest {
         g.addEdge(i);
         g.addEdge(j);
         g.addEdge(k);
+
         assertEquals(7, g.numVerts());
         assertEquals(10, g.numEdges());
+
         List<WEdge<Character>> test = g.allEdges();
         assertTrue(test.contains(a));
-        assertFalse(test.contrains(l));
+        assertFalse(test.contains(l));
     }
 
     @Test
@@ -241,13 +246,14 @@ public class WGraphTest {
 
     @Test
     public void testDepth() {
-        g.addVertex(t);
-        g.addVertex(u);
         g.addVertex(v);
-        g.addVertex(w);
+        g.addVertex(u);
         g.addVertex(x);
+        g.addVertex(w);
+        assertFalse("added already made vertex",g.addVertex(x));
         g.addVertex(y);
         g.addVertex(z);
+        assertEquals("correct",6, g.numVerts());
         g.addEdge(a);
         g.addEdge(b);
         g.addEdge(c);
@@ -259,15 +265,15 @@ public class WGraphTest {
         g.addEdge(j);
         g.addEdge(k);
         g.addEdge(l);
-        assertEquals(7, g.numVerts());
+        assertEquals("added vertex from edge",7, g.numVerts());
         assertEquals(11, g.numEdges());
         List<GVertex<Character>> testt = g.depthFirst(t);
         List<GVertex<Character>> testw = g.depthFirst(w);
         assertTrue(testt.contains(u));
         assertTrue(testt.contains(w));
-        assertFalse(testt.contains(x));
+        assertTrue(testt.contains(x)); ////
         assertTrue(testw.contains(z));
         assertTrue(testw.contains(x));
-        assertFalse(testw.contains(v));
+        assertTrue(testw.contains(v));
     }
 }
