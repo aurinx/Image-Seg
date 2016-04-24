@@ -34,8 +34,8 @@ public class WGraphP4<VT> implements WGraph<VT> {
   }
   //add vertex
   public boolean addVertex(VT data) {
-      for (int i =0; i < verts.size(); i++){
-          if (data == verts.get(i).data()){
+      for (GVertex<VT> temp : verts){
+          if (data == temp.data()){
               return false;
           }
       }
@@ -46,8 +46,8 @@ public class WGraphP4<VT> implements WGraph<VT> {
   }
 
   public boolean addVertex(GVertex<VT> v) {
-      for (int i =0; i < verts.size(); i++){
-          if (v.data() == verts.get(i).data()){
+      for (GVertex<VT> temp : verts){
+          if (v.data() == temp.data()){
               return false;
           }
       }
@@ -62,12 +62,8 @@ public class WGraphP4<VT> implements WGraph<VT> {
       return added;
   }
   private int positioninlist(GVertex<VT> v){
-      for (int i = 0; i < verts.size(); i ++){
-          if (v == verts.get(i)){
-              return i;
-          }
-      }
-      return -1;
+
+      return verts.indexOf(v);
   }
   public boolean addEdge(GVertex<VT> v, GVertex<VT> u, double weight) {
       boolean success = true;
@@ -77,25 +73,27 @@ public class WGraphP4<VT> implements WGraph<VT> {
           success = this.addVertex(u);//add it
       if (!success)
           return false;
-      if (vertedges.get(positioninlist(v)) != null){ // if ths size of the arrlist at a vert is not 0
+      int posv = positioninlist(v);
+      if (vertedges.get(posv) != null){ // if ths size of the arrlist at a vert is not 0
          int a = 0;
-         for (WEdge<VT> temp : vertedges.get(positioninlist(v))) { // see if the dege is there
+         for (WEdge<VT> temp : vertedges.get(posv)) { // see if the dege is there
              if (temp.end() == u)
                  a = 1;
          }
          if (a == 1) //if there return
              return false; //already there
-         vertedges.get(positioninlist(v)).add(new WEdge<VT>(v, u, weight)); //add edge to list
+         vertedges.get(posv).add(new WEdge<VT>(v, u, weight)); //add edge to list
       }
-      if (vertedges.get(positioninlist(u)) != null){ // do again because edge is undircetional
+      int posu = positioninlist(u);
+      if (vertedges.get(posu) != null){ // do again because edge is undircetional
          int b = 0;
-         for (WEdge<VT> temp2 : vertedges.get(positioninlist(u))) {
+         for (WEdge<VT> temp2 : vertedges.get(posu)) {
              if (temp2.end() == v)
                  b = 1;
          }
          if (b == 1)
              return false; //already there
-         vertedges.get(positioninlist(u)).add(new WEdge<VT>(u, v, weight));
+         vertedges.get(posu).add(new WEdge<VT>(u, v, weight));
          this.numEdge++;
          return true;
       }
@@ -105,22 +103,24 @@ public class WGraphP4<VT> implements WGraph<VT> {
   public boolean deleteEdge(GVertex<VT> v, GVertex<VT> u) {
       if(this.verts.contains(v) && this.verts.contains(u)) {//see if both verts there
           int a = -1;
-          if(vertedges.get(positioninlist(v)).size() != 0){//see if vertex edge list is there
-              for (WEdge<VT> temp : vertedges.get(positioninlist(v))) {
+          int posv = positioninlist(v);
+          if(vertedges.get(posv).size() != 0){//see if vertex edge list is there
+              for (WEdge<VT> temp : vertedges.get(posv)) {
                   if (temp.end() == u)
-                      a = vertedges.get(positioninlist(v)).indexOf(temp);
+                      a = vertedges.get(posv).indexOf(temp);
               }
           }
           int b = -1;
-          if(vertedges.get(positioninlist(u)).size() != 0){//do same for other edge direction
-              for (WEdge<VT> temp1 : vertedges.get(positioninlist(u))) {
+          int posu = positioninlist(u);
+          if(vertedges.get(posu).size() != 0){//do same for other edge direction
+              for (WEdge<VT> temp1 : vertedges.get(posu)) {
                   if (temp1.end() == v)
-                      b = vertedges.get(positioninlist(v)).indexOf(temp1);
+                      b = vertedges.get(posu).indexOf(temp1);
               }
           }
           if (a > -1 && b > -1){
-              vertedges.get(positioninlist(v)).remove(a);
-              vertedges.get(positioninlist(u)).remove(b);
+              vertedges.get(posv).remove(a);
+              vertedges.get(posu).remove(b);
               this.numEdge--;
               return true;
           }
@@ -130,8 +130,9 @@ public class WGraphP4<VT> implements WGraph<VT> {
 
 
   public boolean areAdjacent(GVertex<VT> v, GVertex<VT> u) {
-      if(vertedges.get(positioninlist(v)) != null ){//see if node is connected
-          for (WEdge<VT> temp1 : vertedges.get(positioninlist(v))) {
+      int posv = positioninlist(v);
+      if(vertedges.get(posv) != null ){//see if node is connected
+          for (WEdge<VT> temp1 : vertedges.get(posv)) {
               if (temp1.end() == u)
                   return true;
           }
