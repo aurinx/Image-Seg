@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
-
+import java.util.Collections;
 
 public class WGraphP4<VT> implements WGraph<VT> {
 
@@ -9,7 +9,7 @@ public class WGraphP4<VT> implements WGraph<VT> {
   private ArrayList <ArrayList <WEdge<VT>>>  vertedges;  //list of edgelists for each vertex
   private ArrayList<GVertex<VT>> verts; // list of vertex
   private int numEdge; // num of edges
-
+  private int uniques;
   // No real constructor neede
 
   // Initialize the graph with max n vertices
@@ -19,6 +19,7 @@ public class WGraphP4<VT> implements WGraph<VT> {
     verts = new ArrayList<GVertex<VT>>();
     numEdge = 0;
     nextID = 0;
+    uniques = 0;
   }
 
 
@@ -39,9 +40,9 @@ public class WGraphP4<VT> implements WGraph<VT> {
               return false;
           }
       }
-      GVertex<VT> v = new GVertex(data, nextID++);
-      this.verts.add(v); //add vertex with data, and next id 
-      vertedges.add(positioninlist(v), new ArrayList<WEdge<VT>>());
+      GVertex<VT> v = new GVertex(data, nextID++, uniques++);
+      this.verts.add(v.uniqueid(),v); //add vertex with data, and next id 
+      vertedges.add(v.uniqueid(), new ArrayList<WEdge<VT>>());
       return true;
   }
 
@@ -51,8 +52,11 @@ public class WGraphP4<VT> implements WGraph<VT> {
               return false;
           }
       }
-      this.verts.add(v); // add vertex to vertex list
-      vertedges.add(positioninlist(v),new ArrayList<WEdge<VT>>());
+      if(v.uniqueid() == -1){
+          v.changeunique(uniques++);
+      }
+      this.verts.add(v.uniqueid(),v); // add vertex to vertex list
+      vertedges.add(v.uniqueid(),new ArrayList<WEdge<VT>>());
       return true;
   }
 
@@ -73,27 +77,25 @@ public class WGraphP4<VT> implements WGraph<VT> {
           success = this.addVertex(u);//add it
       if (!success)
           return false;
-      int posv = positioninlist(v);
-      if (vertedges.get(posv) != null){ // if ths size of the arrlist at a vert is not 0
+      if (vertedges.get(v.uniqueid()) != null){ // if ths size of the arrlist at a vert is not 0
          int a = 0;
-         for (WEdge<VT> temp : vertedges.get(posv)) { // see if the dege is there
+         for (WEdge<VT> temp : vertedges.get(v.uniqueid())) { // see if the dege is there
              if (temp.end() == u)
                  a = 1;
          }
          if (a == 1) //if there return
              return false; //already there
-         vertedges.get(posv).add(new WEdge<VT>(v, u, weight)); //add edge to list
+         vertedges.get(v.uniqueid()).add(new WEdge<VT>(v, u, weight)); //add edge to list
       }
-      int posu = positioninlist(u);
-      if (vertedges.get(posu) != null){ // do again because edge is undircetional
+      if (vertedges.get(u.uniqueid()) != null){ // do again because edge is undircetional
          int b = 0;
-         for (WEdge<VT> temp2 : vertedges.get(posu)) {
+         for (WEdge<VT> temp2 : vertedges.get(u.uniqueid())) {
              if (temp2.end() == v)
                  b = 1;
          }
          if (b == 1)
              return false; //already there
-         vertedges.get(posu).add(new WEdge<VT>(u, v, weight));
+         vertedges.get(u.uniqueid()).add(new WEdge<VT>(u, v, weight));
          this.numEdge++;
          return true;
       }
@@ -103,24 +105,22 @@ public class WGraphP4<VT> implements WGraph<VT> {
   public boolean deleteEdge(GVertex<VT> v, GVertex<VT> u) {
       if(this.verts.contains(v) && this.verts.contains(u)) {//see if both verts there
           int a = -1;
-          int posv = positioninlist(v);
-          if(vertedges.get(posv).size() != 0){//see if vertex edge list is there
-              for (WEdge<VT> temp : vertedges.get(posv)) {
+          if(vertedges.get(v.uniqueid()).size() != 0){//see if vertex edge list is there
+              for (WEdge<VT> temp : vertedges.get(v.uniqueid())) {
                   if (temp.end() == u)
-                      a = vertedges.get(posv).indexOf(temp);
+                      a = vertedges.get(v.uniqueid()).indexOf(temp);
               }
           }
           int b = -1;
-          int posu = positioninlist(u);
-          if(vertedges.get(posu).size() != 0){//do same for other edge direction
-              for (WEdge<VT> temp1 : vertedges.get(posu)) {
+          if(vertedges.get(u.uniqueid()).size() != 0){//do same for other edge direction
+              for (WEdge<VT> temp1 : vertedges.get(u.uniqueid())) {
                   if (temp1.end() == v)
-                      b = vertedges.get(posu).indexOf(temp1);
+                      b = vertedges.get(u.uniqueid()).indexOf(temp1);
               }
           }
           if (a > -1 && b > -1){
-              vertedges.get(posv).remove(a);
-              vertedges.get(posu).remove(b);
+              vertedges.get(v.uniqueid()).remove(a);
+              vertedges.get(u.uniqueid()).remove(b);
               this.numEdge--;
               return true;
           }
@@ -130,11 +130,17 @@ public class WGraphP4<VT> implements WGraph<VT> {
 
 
   public boolean areAdjacent(GVertex<VT> v, GVertex<VT> u) {
-      int posv = positioninlist(v);
-      if(vertedges.get(posv) != null ){//see if node is connected
-          for (WEdge<VT> temp1 : vertedges.get(posv)) {
-              if (temp1.end() == u)
-                  return true;
+      if(vertedges.get(v.uniqueid()) != null ){//see if node is connected
+          if(vertedges.get(v.uniqueid()).size() < vertedges.get(u.uniqueid()).size()){
+              for (WEdge<VT> temp1 : vertedges.get(v.uniqueid())) {
+                  if (temp1.end() == u)
+                      return true;
+              }
+          } else {
+              for (WEdge<VT> temp1 : vertedges.get(u.uniqueid())) {
+                  if (temp1.end() == v)
+                      return true;
+                  }
           }
       }
       return false;
@@ -142,7 +148,7 @@ public class WGraphP4<VT> implements WGraph<VT> {
 
   public ArrayList<GVertex<VT>> neighbors(GVertex<VT> v) {
       ArrayList<GVertex<VT>> nbs = new ArrayList<GVertex<VT>>();
-      int row = positioninlist(v);
+      int row = v.uniqueid();
       for (WEdge<VT> temp : vertedges.get(row)) {
           nbs.add(temp.end());//add the end of each edge from a node
       }
@@ -159,10 +165,12 @@ public class WGraphP4<VT> implements WGraph<VT> {
 
   public List<WEdge<VT>> allEdges() {
       int nv = this.numVerts();
-      ArrayList<WEdge<VT>> edges = new ArrayList<WEdge<VT>>(nv);
+      ArrayList<WEdge<VT>> edges = new ArrayList<WEdge<VT>>();
       for (ArrayList<WEdge<VT>> temp : vertedges) {
           for (WEdge<VT> temp1 : temp) {
-              edges.add(new WEdge<VT>(temp1.source(), temp1.end(), temp1.weight()));
+              if (temp1.source().uniqueid() > temp1.end().uniqueid()){
+                  edges.add(new WEdge<VT>(temp1.source(), temp1.end(), temp1.weight()));
+              }
           }
       }
       return edges;
@@ -181,8 +189,8 @@ public class WGraphP4<VT> implements WGraph<VT> {
           v = stack.removeFirst();
           reaches.add(v);
           for (GVertex<VT> u: this.neighbors(v)) {
-              if (! visited[positioninlist(u)]) {
-                  visited[positioninlist(u)] = true;
+              if (! visited[u.uniqueid()]) {
+                  visited[u.uniqueid()] = true;
                   stack.addFirst(u);
               }
           }
@@ -190,7 +198,37 @@ public class WGraphP4<VT> implements WGraph<VT> {
        return reaches;
   }
   public List<WEdge<VT>> incidentEdges(GVertex<VT> v) {
-      return vertedges.get((positioninlist(v)));
+      return vertedges.get(v.uniqueid());
   }
+  public List<WEdge<VT>> Kruskals() {
 
+      List<WEdge<VT>> edges = this.allEdges();
+      Collections.sort(edges);
+      return null;
+
+
+      /**
+      PartPtrTree A = new ParPtrTree(this.numVerts());
+      KVPari [] E = new KVPair[this.numEdges()];
+      int edgecnt = 0;
+
+      for (int i=0; i<G.nodeCount(); i++) {         // Put edges in the array
+          int[] nList = G.neighbors(i);
+          for (int w=0; w<nList.length; w++)
+               E[edgecnt++] = new KVPair(G.weight(i, nList[w]), new int[]{i,nList[w]});
+      }
+      MinHeap H = new MinHeap(E, edgecnt, edgecnt);
+      int numMST = G.nodeCount();                   // Initially n disjoint classes
+      for (int i=0; numMST>1; i++) {        // Combine equivalence classes
+          KVPair temp = H.removemin();        // Next cheapest edge
+          if (temp == null) return;           // Must have disconnected vertices
+          int v = ((int[])temp.value())[0];
+          int u = ((int[])temp.value())[1];
+          if (A.differ(v, u)) {               // If in different classes
+              A.UNION(v, u);                    // Combine equiv classes
+              AddEdgetoMST(v, u);               // Add this edge to MST
+              numMST--;                         // One less MST
+          }
+      }*/
+  }	
 }

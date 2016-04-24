@@ -1,5 +1,8 @@
 /** Implementation of an edge class (for graphs), could be directed or not.
  */
+
+import java.util.*;
+
 public class WEdge<VT> implements Comparable<WEdge> {
 
     /** Starting vertex of an WEdge. */
@@ -108,6 +111,19 @@ public class WEdge<VT> implements Comparable<WEdge> {
         return this.toString().hashCode();
     }
     public int compareTo(WEdge other) {
-        return (int)(this.weight - other.weight);
+        if (this.weight < other.weight){
+             return -1;
+        }else{
+             return 1;
+        }
     }
+/**
+    public static class Comparators {
+        public static Comparator<WEdge> Weight = new Comparator<WEdge>(){
+            @Overide
+            public int compare(WEdge o1, WEdge o2) {
+                return o1.weight.compareTo(o2.weight);
+            }
+        };
+    }*/
 }

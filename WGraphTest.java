@@ -184,12 +184,12 @@ public class WGraphTest {
         assertEquals(7, g.numVerts());
         assertEquals(11, g.numEdges());
         //added properly so far
-        System.out.println("hello");
         assertEquals(true, g.deleteEdge(t, u));
         assertEquals(false, g.deleteEdge(t, z));
         assertEquals(false, g.deleteEdge(u, t)); // should this be false? are there two edges created by this case?
         assertEquals(true, g.deleteEdge(u, v));
         assertEquals(false, g.deleteEdge(u, v));
+        assertEquals(9,g.numEdges());
     }
 
     @Test
@@ -217,6 +217,7 @@ public class WGraphTest {
 
         List<WEdge<Character>> test = g.allEdges();
         assertTrue(test.contains(a));
+        assertEquals(10, test.size());
         assertFalse(test.contains(l));
     }
 

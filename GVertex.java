@@ -9,7 +9,8 @@ public class GVertex<VT> implements Comparable<GVertex> {
 
     /** Data stored in the vertex. */
     private VT data;
-
+    /** Unique number for each vertex*/
+    private int uniqueid;
     /** Create a new vertex.
      *  @param d the data to store in the node
      *  @param id the unique id of the node
@@ -17,6 +18,12 @@ public class GVertex<VT> implements Comparable<GVertex> {
     public GVertex (VT d, int id) {
         this.data = d;
         this.num = id;
+        this.uniqueid = -1;
+    }
+    public GVertex (VT d, int id, int auniqueid) {
+        this.data = d;
+        this.num = id;
+        this.uniqueid = auniqueid;
     }
 
     /** Get the id of this vertex.
@@ -25,7 +32,15 @@ public class GVertex<VT> implements Comparable<GVertex> {
     public int id() {
         return this.num;
     }
-
+    public VT data(){
+        return this.data;
+    }
+    public int uniqueid(){
+        return this.uniqueid;
+    }
+    public void changeunique(int temp){
+        this.uniqueid = temp;
+    }
     /** Get a string representation of the vertex.
      *  @return the string 
      */
