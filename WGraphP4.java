@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
@@ -201,34 +202,20 @@ public class WGraphP4<VT> implements WGraph<VT> {
       return vertedges.get(v.uniqueid());
   }
   public List<WEdge<VT>> Kruskals() {
-
+      WGraphP4<VT> newstuff = new WGraphP4();
+      List<GVertex<VT>> verti = this.allVertices();
       List<WEdge<VT>> edges = this.allEdges();
-      Collections.sort(edges);
-      return null;
-
-
-      /**
-      PartPtrTree A = new ParPtrTree(this.numVerts());
-      KVPari [] E = new KVPair[this.numEdges()];
-      int edgecnt = 0;
-
-      for (int i=0; i<G.nodeCount(); i++) {         // Put edges in the array
-          int[] nList = G.neighbors(i);
-          for (int w=0; w<nList.length; w++)
-               E[edgecnt++] = new KVPair(G.weight(i, nList[w]), new int[]{i,nList[w]});
-      }
-      MinHeap H = new MinHeap(E, edgecnt, edgecnt);
-      int numMST = G.nodeCount();                   // Initially n disjoint classes
-      for (int i=0; numMST>1; i++) {        // Combine equivalence classes
-          KVPair temp = H.removemin();        // Next cheapest edge
-          if (temp == null) return;           // Must have disconnected vertices
-          int v = ((int[])temp.value())[0];
-          int u = ((int[])temp.value())[1];
-          if (A.differ(v, u)) {               // If in different classes
-              A.UNION(v, u);                    // Combine equiv classes
-              AddEdgetoMST(v, u);               // Add this edge to MST
-              numMST--;                         // One less MST
+      Partition P = new Partition(verti.size()); 
+      MaxPQHeap Q = new  MaxPQHeap(edges);
+      while (Q.size() > 0) {
+          WEdge<VT> temp = Q.removeMinElement();
+          GVertex<VT> u = temp.source();
+          GVertex<VT> v = temp.end();
+          if(P.find(u.uniqueid()) != P.find(v.uniqueid())){
+              newstuff.addEdge(temp);
+              P.union(u.uniqueid(),v.uniqueid());
           }
-      }*/
-  }	
+      }
+      return newstuff.allEdges();
+  }
 }
