@@ -36,12 +36,7 @@ public class WGraphP4<VT> implements WGraph<VT> {
       return nextID++;
   }
   //add vertex
-  public boolean addVertex(VT data) {
-      for (GVertex<VT> temp : verts){
-          if (data == temp.data()){
-              return false;
-          }
-      }
+  public boolean addVertex(VT data) { 
       GVertex<VT> v = new GVertex(data, nextID++, uniques++);
       this.verts.add(v.uniqueid(),v); //add vertex with data, and next id 
       vertedges.add(v.uniqueid(), new ArrayList<WEdge<VT>>());
