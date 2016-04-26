@@ -110,6 +110,7 @@ public class WEdge<VT> implements Comparable<WEdge> {
     public int hashCode() {
         return this.toString().hashCode();
     }
+    @Override
     public int compareTo(WEdge other) {
         if (this.weight < other.weight){
              return -1;
@@ -117,13 +118,14 @@ public class WEdge<VT> implements Comparable<WEdge> {
              return 1;
         }
     }
-/**
-    public static class Comparators {
-        public static Comparator<WEdge> Weight = new Comparator<WEdge>(){
-            @Overide
+/**    public class WEdgeComparator implements Comparator<WEdge> {
+            @Override
             public int compare(WEdge o1, WEdge o2) {
-                return o1.weight.compareTo(o2.weight);
+                Double a = o1.weight();
+                return a.compareTo(o2.weight());
             }
-        };
-    }*/
+    }
+
+*/
 }
+

@@ -1,7 +1,7 @@
 public class pixel {
     private int locx;
     private int locy;
-    private int 
+    private int nothing;
     private int red;
     private int green;
     private int blue;

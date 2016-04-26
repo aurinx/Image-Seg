@@ -3,6 +3,7 @@ import java.util.Set;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
+import java.util.Comparator;
 
 public class WGraphP4<VT> implements WGraph<VT> {
 
@@ -206,14 +207,36 @@ public class WGraphP4<VT> implements WGraph<VT> {
       List<GVertex<VT>> verti = this.allVertices();
       List<WEdge<VT>> edges = this.allEdges();
       Partition P = new Partition(verti.size()); 
-      PQHeap<WEdge<VT>> Q = new PQHeap<WEdge<VT>>(edges);
+      PQHeap<WEdge<VT>> Q = new PQHeap<WEdge<VT>>();
       Q.init(edges);
       while (Q.size() > 0) {
-          WEdge<VT> temp = Q.remove();
+          WEdge<VT> temp = Q.peek();
+          Q.remove();
           GVertex<VT> u = temp.source();
           GVertex<VT> v = temp.end();
           if(P.find(u.uniqueid()) != P.find(v.uniqueid())){
               newstuff.addEdge(temp);
+              P.union(u.uniqueid(),v.uniqueid());
+          }
+      }
+      return newstuff.allEdges();
+  }
+  public List<WEdge<VT>> Segmenter() {
+      WGraphP4<VT> newstuff = new WGraphP4();
+      List<GVertex<VT>> verti = this.allVertices();
+      List<WEdge<VT>> edges = this.allEdges();
+      Partition P = new Partition(verti.size()); 
+      PQHeap<WEdge<VT>> Q = new PQHeap<WEdge<VT>>();
+      Q.init(edges);
+      maxmin [] mmclass = new maxmin[verti.size()];
+      while (Q.size() > 0) {
+          WEdge<VT> temp = Q.peek();
+          Q.remove();
+          GVertex<VT> u = temp.source();
+          GVertex<VT> v = temp.end();
+          if(P.find(u.uniqueid()) != P.find(v.uniqueid())){
+              newstuff.addEdge(temp);
+              if(
               P.union(u.uniqueid(),v.uniqueid());
           }
       }

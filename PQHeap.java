@@ -114,20 +114,19 @@ public class PQHeap<T extends Comparable<? super T>> implements PriorityQueue {
     }
 
     @Override
-    public Comparable remove() throws QueueEmptyException {
+    public void remove() throws QueueEmptyException {
         if (this.size() == 1) {
             throw new QueueEmptyException();
         }  else {
             this.swap(1, this.size() - 1);
             T temp = this.heap.remove(this.size() - 1);
-            this.bubbleDown(1);   
-            return temp;
+            this.bubbleDown(1);
         }
     
     }
 
     @Override
-    public Comparable peek() throws QueueEmptyException {
+    public T peek() throws QueueEmptyException {
         return this.heap.get(1);
     }
 
