@@ -206,9 +206,10 @@ public class WGraphP4<VT> implements WGraph<VT> {
       List<GVertex<VT>> verti = this.allVertices();
       List<WEdge<VT>> edges = this.allEdges();
       Partition P = new Partition(verti.size()); 
-      MaxPQHeap Q = new  MaxPQHeap(edges);
+      PQHeap<WEdge<VT>> Q = new PQHeap<WEdge<VT>>(edges);
+      Q.init(edges);
       while (Q.size() > 0) {
-          WEdge<VT> temp = Q.removeMinElement();
+          WEdge<VT> temp = Q.remove();
           GVertex<VT> u = temp.source();
           GVertex<VT> v = temp.end();
           if(P.find(u.uniqueid()) != P.find(v.uniqueid())){
