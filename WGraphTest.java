@@ -44,12 +44,13 @@ public class WGraphTest {
     @Test
     public void testAddVertex() {
         assertEquals(true, g.addVertex(v));
+        assertTrue(v.uniqueid() != -1);
         assertEquals(true, g.addVertex(u));
         assertEquals(false, g.addVertex(v));
         assertEquals(true, g.addVertex(w));
         //adding vertex by data
         assertEquals(true, g.addVertex('s'));
-        assertEquals(false, g.addVertex('s'));
+        assertEquals(true, g.addVertex('s'));
     }
 
     @Test

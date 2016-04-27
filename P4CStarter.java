@@ -9,31 +9,23 @@ import java.util.List;
 import java.util.ArrayList;
 
 
-public class P4C {
-    private class Distance<T>{
+public class P4CStarter extends Distance{
 
-        public double Distance(<Pixel> one, <Pixel> two){
-            int sumred = (two.getred() - one.getred())*(two.getred() - one.getred());
-            int sumgreen = (two.getgreen() - one.getgreen())*(two.getgreen() - one.getgreen());
-            int sumblue = (two.getblue() - one.getblue())*(two.getblue() - one.getblue());
-            double sum  = sumred + sumgreen + sumblue;
-            return sum;
-        }
-     }
+     static int K = 10;
     /** Convert an image to a graph of Pixels with edges between
      *  north, south, east and west neighboring pixels.
      *  @param image the image to convert
      *  @param pd the distance object for pixels
      *  @return the graph that was created
      */
-    static WGraph<Pixel> imageToGraph(BufferedImage image, Distance<Pixel> pd) {
+    static WGraph<Pixel> imageToGraph(BufferedImage image, Distance pd) {
         WGraphP4<Pixel> g = new WGraphP4<Pixel>();
         GVertex<Pixel>[][] parray= new GVertex<Pixel>[image.getWidth()][image.getHeight()];
         for (int i = 0; i < image.getWidth(); i++) {
-            for (int j = 0; j < image.getheight(); j++) {
+            for (int j = 0; j < image.getHeight(); j++) {
                 Color mycolor = new Color(img.getRGB(i,j));
                 Pixel newpixel = new Pixel(i, j,mycolor.getRed(),mycolor.getGreen(),mycolor.getBlue()); 
-                GVertex<Pixel> newv = new GVertex(newpixel, g.nextid());
+                GVertex<Pixel> newv = new GVertex(newpixel, g.nextID());
                 g.addVertex(newv);
                 parray[i][j] = newv;
             }
@@ -59,7 +51,41 @@ public class P4C {
      *  @return a list of the edges in the minimum spanning forest
      */
 
-    static List<WEdge<Pixel>> segmenter(WGraph<Pixel> g, double kvalue) {
+    static List<WEdge<Pixel>> segmenter(WGraph<Pixel> g, double kvalue) { // normal kruskals but adds that fuckign equation
+      WGraphP4<Pixel> newstuff = new WGraphP4();
+      List<GVertex<Pixel>> verti = g.allVertices();
+      List<WEdge<Pixel>> edges = g.allEdges();
+      Partition P = new Partition(verti.size()); 
+      PQHeap<WEdge<Pixel>> Q = new PQHeap<WEdge<Pixel>>();
+      Q.init(edges);
+      ArrayList<maxmin> mmlist = new ArrayList<maxmin>(); //max an arraylist of maxmin class according to unique id
+      for (int i = 0; i < verti.size(); i++){ // add to mm to list
+          mmlist.add(i, new maxmin(verti.get(i)));
+      }
+      while (Q.size() > 0) {
+          WEdge<Pixel> temp = Q.peek();
+          Q.remove();
+          GVertex<Pixel> u = temp.source();
+          GVertex<Pixel> v = temp.end();
+          if(P.find(u.uniqueid()) != P.find(v.uniqueid())){
+              newstuff.addEdge(temp);
+              maxmin mmu = mmlist.get(P.find(u.uniqueid())); // uses partition to get to root
+              maxmin mmv = mmlist.get(P.find(v.uniqueid())); // uses partition to get to root
+              if(mmu.diffrc(mmv) <= Math.min(mmu.diffr(), mmv.diffr()) + K/(mmu.getCount() + mmv.getCount())){//if red
+                  if(mmu.diffgc(mmv) <= Math.min(mmu.diffg(), mmv.diffg()) + K/(mmu.getCount() + mmv.getCount())){//if green
+                      if(mmu.diffbc(mmv) <= Math.min(mmu.diffb(), mmv.diffb()) + K/(mmu.getCount() + mmv.getCount())){//if blue
+                          mmlist.get(P.find(u.uniqueid())).combine(mmlist.get(P.find(v.uniqueid())));//unions the two but really only edits the bigger root
+                          P.union(u.uniqueid(),v.uniqueid()); // union them in partition
+                      }
+                  }
+              }
+
+          }
+      }
+      return newstuff.allEdges();
+
+
+
     }
 
     public static void main(String[] args) {

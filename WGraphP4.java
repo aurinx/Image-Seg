@@ -44,11 +44,9 @@ public class WGraphP4<VT> implements WGraph<VT> {
   }
 
   public boolean addVertex(GVertex<VT> v) {
-      for (GVertex<VT> temp : verts){
-          if (v.data() == temp.data()){
-              return false;
-          }
-      }
+      if(v.uniqueid() != -1){
+          return false;
+      } 
       if(v.uniqueid() == -1){
           v.changeunique(uniques++);
       }
@@ -211,27 +209,6 @@ public class WGraphP4<VT> implements WGraph<VT> {
           GVertex<VT> v = temp.end();
           if(P.find(u.uniqueid()) != P.find(v.uniqueid())){
               newstuff.addEdge(temp);
-              P.union(u.uniqueid(),v.uniqueid());
-          }
-      }
-      return newstuff.allEdges();
-  }
-  public List<WEdge<VT>> Segmenter() {
-      WGraphP4<VT> newstuff = new WGraphP4();
-      List<GVertex<VT>> verti = this.allVertices();
-      List<WEdge<VT>> edges = this.allEdges();
-      Partition P = new Partition(verti.size()); 
-      PQHeap<WEdge<VT>> Q = new PQHeap<WEdge<VT>>();
-      Q.init(edges);
-      maxmin [] mmclass = new maxmin[verti.size()];
-      while (Q.size() > 0) {
-          WEdge<VT> temp = Q.peek();
-          Q.remove();
-          GVertex<VT> u = temp.source();
-          GVertex<VT> v = temp.end();
-          if(P.find(u.uniqueid()) != P.find(v.uniqueid())){
-              newstuff.addEdge(temp);
-              if(
               P.union(u.uniqueid(),v.uniqueid());
           }
       }
