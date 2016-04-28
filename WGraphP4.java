@@ -1,241 +1,281 @@
+/** Data Structures EN.600.226.02
+ * @author: Joo Sung Kim, Aurin Chakravarty, Dimitri Nikitopoulous
+ * JHED: jkim469, achakar16, dnikito1
+ */
+
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Collections;
-import java.util.Comparator;
 
+/**Graph that implements WEdge.
+ * @param <VT> generic datatype
+ */
 public class WGraphP4<VT> implements WGraph<VT> {
+    /** Next ID. */
+    private int nextID;
+    /** ArrayList of edge lists for each vertex. */
+    private ArrayList<ArrayList<WEdge<VT>>>  vertedges; 
+    /** ArrayList of vertices. */
+    private ArrayList<GVertex<VT>> verts;
+    /** Number of edges. */
+    private int numEdge;
+    /** Number of uniques. */
+    private int uniques;
+    /** Height of the graph. */
+    private int height;
+    /** Width of the graph. */
+    private int width;
+    /** Empty constructor.
+     */
+    public WGraphP4() {
+        this.vertedges = new ArrayList<ArrayList<WEdge<VT>>>();
+        //add list to each vertex
+        this.verts = new ArrayList<GVertex<VT>>();
+        this.numEdge = 0;
+        this.nextID = 0;
+        this.uniques = 0;
+    }
 
-  private int nextID;  // next id for vertex
-  private ArrayList <ArrayList <WEdge<VT>>>  vertedges;  //list of edgelists for each vertex
-  private ArrayList<GVertex<VT>> verts; // list of vertex
-  private int numEdge; // num of edges
-  private int uniques;
-  private int height;
-  private int width;
-  // No real constructor neede
+    /**Constructor with given width and height.
+     * @param width1 given width
+     * @param height1 given height
+     */
+    public WGraphP4(int width1, int height1) {
+        this.vertedges = new ArrayList<ArrayList<WEdge<VT>>>(height1 * width1);
+        //add list to each vertex
+        this.verts = new ArrayList<GVertex<VT>>(height1 * width1);
+        this.numEdge = 0;
+        this.nextID = 0;
+        this.uniques = 0;
+        this.height = height1;
+        this.width = width1;
+    }
 
-  // Initialize the graph with max n vertices
-  public WGraphP4() {
-    vertedges = new ArrayList<ArrayList<WEdge<VT>>>();
-    //add list to each vertex
-    verts = new ArrayList<GVertex<VT>>();
-    numEdge = 0;
-    nextID = 0;
-    uniques = 0;
-  }
-  public WGraphP4(int width1, int height1) {
-    vertedges = new ArrayList<ArrayList<WEdge<VT>>>(height1*width1);
-    //add list to each vertex
-    verts = new ArrayList<GVertex<VT>>(height1*width1);
-    numEdge = 0;
-    nextID = 0;
-    uniques = 0;
-    height = height1;
-    width = width1;
-  }
+    @Override
+    public int numEdges() { 
+        return this.numEdge; 
+    }
+    
+    @Override
+    public int numVerts() {
+        return this.verts.size();
+    }
 
+    @Override
+    public int nextID() {
+        return this.nextID++;
+    }
 
-  // Return the current number of edges
-  public int numEdges() { return numEdge; }
-  // Return the number of vertices
-  public int numVerts() { return verts.size(); }
+    @Override
+    public boolean addVertex(VT data) { 
+        GVertex<VT> v = new GVertex(data, this.nextID++, this.uniques++);
+        this.verts.add(v.uniqueid(), v); //add vertex with data, and next id 
+        this.vertedges.add(v.uniqueid(), new ArrayList<WEdge<VT>>());
+        return true;
+    }
 
+    @Override
+    public boolean addVertex(GVertex<VT> v) {
+        if (v.uniqueid() == -1) {
+            v.changeunique(this.uniques++);
+        }
+        this.verts.add(v.uniqueid(), v); // add vertex to vertex list
+        this.vertedges.add(v.uniqueid(), new ArrayList<WEdge<VT>>());
+        return true;
+    }
 
-  //get the next ID for vert
-  public int nextID() {
-      return nextID++;
-  }
-  //add vertex
-  public boolean addVertex(VT data) { 
-      GVertex<VT> v = new GVertex(data, nextID++, uniques++);
-      this.verts.add(v.uniqueid(),v); //add vertex with data, and next id 
-      vertedges.add(v.uniqueid(), new ArrayList<WEdge<VT>>());
-      return true;
-  }
+    @Override
+    public boolean addEdge(WEdge<VT> e) {
+        boolean added = false;
+        added = this.addEdge(e.source(), e.end(), e.weight());
+        return added;
+    }
 
-  public boolean addVertex(GVertex<VT> v) {
-      //if(v.uniqueid() != -1){
-      //    if(v.uniqueid() >= uniques){
-      //        v.changeunique(uniques++);
-      //    } else {
-      //        return false;
-      //    }
-//      }
-      if(v.uniqueid() == -1){
-          v.changeunique(uniques++);
-      }
-      this.verts.add(v.uniqueid(),v); // add vertex to vertex list
-      vertedges.add(v.uniqueid(),new ArrayList<WEdge<VT>>());
-      return true;
-  }
+    /** Helmer method to get the index of vertex in verts list.
+     * @param v Vertex we are trying to figure out
+     * @return returns the position of v in verts
+     */
+    private int positioninlist(GVertex<VT> v) {
+        return this.verts.indexOf(v);
+    }
 
-  public boolean addEdge(WEdge<VT> e) {
-      boolean added = false;
-      added = addEdge(e.source(), e.end(), e.weight());
-      return added;
-  }
-  private int positioninlist(GVertex<VT> v){
+    @Override
+    public boolean addEdge(GVertex<VT> v, GVertex<VT> u, double weight) {
+        boolean success = true;
+        if (v.uniqueid() == -1) {
+            this.addVertex(v);
+        }
+        if (u.uniqueid() == -1) {
+            this.addVertex(u);
+        }
+        if (this.vertedges.get(v.uniqueid()) != null) { 
+            int a = 0;
+            for (WEdge<VT> temp : this.vertedges.get(v.uniqueid())) {
+                if (temp.end() == u) {
+                    a = 1;
+                    return false;
+                }
+            }
+            this.vertedges.get(v.uniqueid())
+                .add(new WEdge<VT>(v, u, weight)); //add edge to list
+        }
+        if (this.vertedges.get(u.uniqueid()) != null) { //redo
+            int b = 0;
+            for (WEdge<VT> temp2 : this.vertedges.get(u.uniqueid())) {
+                if (temp2.end() == v) {
+                    b = 1;
+                    return false;
+                }
+            }
+            this.vertedges.get(u.uniqueid()).add(new WEdge<VT>(u, v, weight));
+            this.numEdge++;
+            return true;
+        }
+        return false;
+    }
 
-      return verts.indexOf(v);
-  }
-  public boolean addEdge(GVertex<VT> v, GVertex<VT> u, double weight) {
-      boolean success = true;
-      if(v.uniqueid() == -1)
-          this.addVertex(v);
-      if(u.uniqueid() == -1)
-          this.addVertex(u);
-      //if(!this.verts.contains(v)) // if verts does not contain begin vertex yet
-      //    success = this.addVertex(v); //add vertex to vert
-      //if(success && !this.verts.contains(u))//if verts does not contain end
-      //    success = this.addVertex(u);//add it
-      //if (!success)
-      //    return false;
-      if (vertedges.get(v.uniqueid()) != null){ // if ths size of the arrlist at a vert is not 0
-         int a = 0;
-         for (WEdge<VT> temp : vertedges.get(v.uniqueid())) { // see if the edege is there
-             if (temp.end() == u)
-                 a = 1;
-         }
-         if (a == 1) //if there return
-             return false; //already there
-         vertedges.get(v.uniqueid()).add(new WEdge<VT>(v, u, weight)); //add edge to list
-      }
-      if (vertedges.get(u.uniqueid()) != null){ // do again because edge is undircetional
-         int b = 0;
-         for (WEdge<VT> temp2 : vertedges.get(u.uniqueid())) {
-             if (temp2.end() == v)
-                 b = 1;
-         }
-         if (b == 1)
-             return false; //already there
-         vertedges.get(u.uniqueid()).add(new WEdge<VT>(u, v, weight));
-         this.numEdge++;
-         return true;
-      }
-      return false;
+    @Override
+    public boolean deleteEdge(GVertex<VT> v, GVertex<VT> u) {
+        if (this.verts.contains(v) && this.verts.contains(u)) {
+            int a = -1;
+            if (this.vertedges.get(v.uniqueid()).size() != 0) {
+                a = this.findEdge(v, u);
+            }
+            int b = -1;
+            if (this.vertedges.get(u.uniqueid()).size() != 0) {
+                b = this.findEdge(u, v);
+            }
+            if (a > -1 && b > -1) {
+                this.vertedges.get(v.uniqueid()).remove(a);
+                this.vertedges.get(u.uniqueid()).remove(b);
+                this.numEdge--;
+                return true;
+            }
+        }
+        return false;
+    }
 
-  }
-  public boolean deleteEdge(GVertex<VT> v, GVertex<VT> u) {
-      if(this.verts.contains(v) && this.verts.contains(u)) {//see if both verts there
-          int a = -1;
-          if(vertedges.get(v.uniqueid()).size() != 0){//see if vertex edge list is there
-              for (WEdge<VT> temp : vertedges.get(v.uniqueid())) {
-                  if (temp.end() == u)
-                      a = vertedges.get(v.uniqueid()).indexOf(temp);
-              }
-          }
-          int b = -1;
-          if(vertedges.get(u.uniqueid()).size() != 0){//do same for other edge direction
-              for (WEdge<VT> temp1 : vertedges.get(u.uniqueid())) {
-                  if (temp1.end() == v)
-                      b = vertedges.get(u.uniqueid()).indexOf(temp1);
-              }
-          }
-          if (a > -1 && b > -1){
-              vertedges.get(v.uniqueid()).remove(a);
-              vertedges.get(u.uniqueid()).remove(b);
-              this.numEdge--;
-              return true;
-          }
-      }
-      return false;
-  }
+    /** Helper method for deleteEdge.
+     * @param v vertex v
+     * @param u vertex u
+     * @return int value of the index
+     */
+    private int findEdge(GVertex<VT> v, GVertex<VT> u) {
+        for (WEdge<VT> temp : this.vertedges.get(v.uniqueid())) {
+            if (temp.end() == u) {
+                return this.vertedges.get(v.uniqueid()).indexOf(temp);
+            }
+        }
+        return -1;
+    }
 
+    @Override
+    public boolean areAdjacent(GVertex<VT> v, GVertex<VT> u) {
+        if (this.vertedges.get(v.uniqueid()) != null) { //if node is connected
+            if (this.vertedges.get(v.uniqueid()).size()
+                < this.vertedges.get(u.uniqueid()).size()) {
+                for (WEdge<VT> temp1 : this.vertedges.get(v.uniqueid())) {
+                    if (temp1.end() == u) {
+                        return true;
+                    }
+                }
+            } else {
+                for (WEdge<VT> temp1 : this.vertedges.get(u.uniqueid())) {
+                    if (temp1.end() == v) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
-  public boolean areAdjacent(GVertex<VT> v, GVertex<VT> u) {
-      if(vertedges.get(v.uniqueid()) != null ){//see if node is connected
-          if(vertedges.get(v.uniqueid()).size() < vertedges.get(u.uniqueid()).size()){
-              for (WEdge<VT> temp1 : vertedges.get(v.uniqueid())) {
-                  if (temp1.end() == u)
-                      return true;
-              }
-          } else {
-              for (WEdge<VT> temp1 : vertedges.get(u.uniqueid())) {
-                  if (temp1.end() == v)
-                      return true;
-                  }
-          }
-      }
-      return false;
-  }
+    @Override
+    public ArrayList<GVertex<VT>> neighbors(GVertex<VT> v) {
+        ArrayList<GVertex<VT>> nbs = new ArrayList<GVertex<VT>>();
+        int row = v.uniqueid();
+        for (WEdge<VT> temp : this.vertedges.get(row)) {
+            nbs.add(temp.end()); //add the end of each edge from a node
+        }
+        return nbs;
+    }
 
-  public ArrayList<GVertex<VT>> neighbors(GVertex<VT> v) {
-      ArrayList<GVertex<VT>> nbs = new ArrayList<GVertex<VT>>();
-      int row = v.uniqueid();
-      for (WEdge<VT> temp : vertedges.get(row)) {
-          nbs.add(temp.end());//add the end of each edge from a node
-      }
-      return nbs;
-  }
+    @Override
+    public int degree(GVertex<VT> v) {
+        return this.neighbors(v).size();
+    }
 
-  public int degree (GVertex<VT> v) {
-      return this.neighbors(v).size();
-  }
+    @Override
+    public boolean areIncident(WEdge<VT> e, GVertex<VT> v) {
+        return e.source().equals(v) || e.end().equals(v);
+    }
 
-  public boolean areIncident(WEdge<VT> e, GVertex<VT> v) {
-      return e.source().equals(v) || e.end().equals(v);
-  }
+    @Override
+    public List<WEdge<VT>> allEdges() {
+        int nv = this.numVerts();
+        ArrayList<WEdge<VT>> edges = new ArrayList<WEdge<VT>>();
+        for (ArrayList<WEdge<VT>> temp : this.vertedges) {
+            for (WEdge<VT> temp1 : temp) {
+                if (temp1.source().uniqueid() > temp1.end().uniqueid()) {
+                    edges.add(temp1);
+                }
+            }
+        }
+        return edges;
+    }
 
-  public List<WEdge<VT>> allEdges() {
-      int nv = this.numVerts();
-      ArrayList<WEdge<VT>> edges = new ArrayList<WEdge<VT>>();
-      for (ArrayList<WEdge<VT>> temp : vertedges) {
-          for (WEdge<VT> temp1 : temp) {
-              if (temp1.source().uniqueid() > temp1.end().uniqueid()){
-                  edges.add(temp1);
-              }
-          }
-      }
-      return edges;
-  }
+    @Override
+    public List<GVertex<VT>> allVertices() {
+        ArrayList<GVertex<VT>> temp = new ArrayList<GVertex<VT>>();
+        for (GVertex<VT> temp2: this.verts) {
+            temp.add(temp2);
+        }
+        return temp;
+    }
 
-  public List<GVertex<VT>> allVertices() {
-      ArrayList<GVertex<VT>> temp = new ArrayList<GVertex<VT>>();
-      for (GVertex<VT> temp2: this.verts){
-          temp.add(temp2);
-      }
-      return temp;
-  }
+    @Override
+    public List<GVertex<VT>> depthFirst(GVertex<VT> v) {
+        ArrayList<GVertex<VT>> reaches = 
+            new ArrayList<GVertex<VT>>(this.numVerts());
+        LinkedList<GVertex<VT>> stack = new LinkedList<GVertex<VT>>();
+        boolean[] visited = new boolean[this.numVerts()];
+        stack.addFirst(v);
+        while (!stack.isEmpty()) {
+            v = stack.removeFirst();
+            reaches.add(v);
+            for (GVertex<VT> u: this.neighbors(v)) {
+                if (!visited[u.uniqueid()]) {
+                    visited[u.uniqueid()] = true;
+                    stack.addFirst(u);
+                }
+            }
+        }
+        return reaches;
+    }
 
-  public List<GVertex<VT>> depthFirst(GVertex<VT> v) {
-      ArrayList<GVertex<VT>> reaches = new ArrayList<GVertex<VT>>(this.numVerts());
-      LinkedList<GVertex<VT>> stack = new LinkedList<GVertex<VT>>();
-      boolean[] visited = new boolean[this.numVerts()];
-      stack.addFirst(v);
-      while(!stack.isEmpty()) {
-          v = stack.removeFirst();
-          reaches.add(v);
-          for (GVertex<VT> u: this.neighbors(v)) {
-              if (! visited[u.uniqueid()]) {
-                  visited[u.uniqueid()] = true;
-                  stack.addFirst(u);
-              }
-          }
-       }
-       return reaches;
-  }
-  public List<WEdge<VT>> incidentEdges(GVertex<VT> v) {
-      return vertedges.get(v.uniqueid());
-  }
-/**  public List<WEdge<VT>> Kruskals() {
-      WGraphP4<VT> newstuff = new WGraphP4();
-      List<GVertex<VT>> verti = this.allVertices();
-      List<WEdge<VT>> edges = this.allEdges();
-      Partition P = new Partition(verti.size()); 
-      PQHeap<WEdge<VT>> Q = new PQHeap<WEdge<VT>>();
-      Q.init(edges);
-      while (Q.size() > 0) {
-          WEdge<VT> temp = Q.peek();
-          Q.remove();
-          GVertex<VT> u = temp.source();
-          GVertex<VT> v = temp.end();
-          if(P.find(u.uniqueid()) != P.find(v.uniqueid())){
-              newstuff.addEdge(temp);
-              P.union(u.uniqueid(),v.uniqueid());
-          }
-      }
-      return newstuff.allEdges();
-  }*/
+    @Override
+    public List<WEdge<VT>> incidentEdges(GVertex<VT> v) {
+        return this.vertedges.get(v.uniqueid());
+    }
+
+    @Override
+    public List<WEdge<VT>> kruskals() {
+        WGraphP4<VT> newstuff = new WGraphP4();
+        List<GVertex<VT>> verti = this.allVertices();
+        List<WEdge<VT>> edges = this.allEdges();
+        Partition pt = new Partition(verti.size()); 
+        PQHeap<WEdge<VT>> pq = new PQHeap<WEdge<VT>>();
+        pq.init(edges);
+        while (pq.size() > 0) {
+            WEdge<VT> temp = pq.peek();
+            pq.remove();
+            GVertex<VT> u = temp.source();
+            GVertex<VT> v = temp.end();
+            if (pt.find(u.uniqueid()) != pt.find(v.uniqueid())) {
+                newstuff.addEdge(temp);
+                pt.union(u.uniqueid(), v.uniqueid());
+            }
+        }
+        return newstuff.allEdges();
+    }
 }
