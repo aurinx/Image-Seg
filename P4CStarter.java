@@ -13,7 +13,6 @@ import java.util.PriorityQueue;
 
 public class P4CStarter{
 
-     static int K = 10;
     /** Convert an image to a graph of Pixels with edges between
      *  north, south, east and west neighboring pixels.
      *  @param image the image to convert
@@ -56,14 +55,14 @@ public class P4CStarter{
      *  @return a list of the edges in the minimum spanning forest
      */
 
-    static List<WEdge<Pixel>> segmenter(WGraph<Pixel> g, double kvalue) { // normal kruskals but adds that fuckign equation
+    static List<WEdge<Pixel>> segmenter(WGraph<Pixel> g, double K) { // normal kruskals but adds that fuckign equation
       WGraphP4<Pixel> newstuff = new WGraphP4();
       List<GVertex<Pixel>> verti = g.allVertices();
       List<WEdge<Pixel>> edges = g.allEdges();
       Partition P = new Partition(verti.size()); 
       //PQHeap<WEdge<Pixel>> Q = new PQHeap<WEdge<Pixel>>();
       PriorityQueue<WEdge<Pixel>> Q = new PriorityQueue<WEdge<Pixel>>();
-      //Q.init(edges);
+//      Q.init(edges);
       for (WEdge<Pixel> temp7 : edges){ 
           Q.add(temp7);
       }
@@ -82,9 +81,9 @@ public class P4CStarter{
           if(P.find(u.uniqueid()) != P.find(v.uniqueid())){
               maxmin mmu = mmlist.get(P.find(u.uniqueid())); // uses partition to get to root
               maxmin mmv = mmlist.get(P.find(v.uniqueid())); // uses partition to get to root
-              if(mmu.diffrc(mmv) <= Math.min(mmu.diffr(), mmv.diffr()) + K/(mmu.getCount() + mmv.getCount())){//if red
-                  if(mmu.diffgc(mmv) <= Math.min(mmu.diffg(), mmv.diffg()) + K/(mmu.getCount() + mmv.getCount())){//if green
-                      if(mmu.diffbc(mmv) <= Math.min(mmu.diffb(), mmv.diffb()) + K/(mmu.getCount() + mmv.getCount())){//if blue
+              if((double)mmu.diffrc(mmv) <= (Math.min(mmu.diffr(), mmv.diffr()) + (double)K/(double)(mmu.getCount() + mmv.getCount()))){//if red
+                  if((double)mmu.diffgc(mmv) <= (Math.min(mmu.diffg(), mmv.diffg()) + (double)K/(double)(mmu.getCount() + mmv.getCount()))){//if green
+                      if(((double)mmu.diffbc(mmv) <= Math.min(mmu.diffb(), mmv.diffb()) + (double)K/(double)(mmu.getCount() + mmv.getCount()))){//if blue
                           mmlist.get(P.find(u.uniqueid())).combine(mmlist.get(P.find(v.uniqueid())));//unions the two but really only edits the bigger root
                           newstuff.addEdge(temp);
                           P.union(u.uniqueid(),v.uniqueid()); // union them in partition

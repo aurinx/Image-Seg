@@ -113,9 +113,9 @@ public class WEdge<VT> implements Comparable<WEdge> {
     @Override
     public int compareTo(WEdge other) {
         if (this.weight < other.weight){
-             return -1;
-        }else{
              return 1;
+        }else{
+             return -1;
         }
     }
 /**    public class WEdgeComparator implements Comparator<WEdge> {
