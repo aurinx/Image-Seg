@@ -25,7 +25,6 @@ public class PQHeap<T extends Comparable<? super T>> implements PriorityQueue {
      */
     public PQHeap() {
         this.heap = new ArrayList<T>();
-        this.heap.add(null);
         Comparator<T> compare = new Comparator<T>() {
             @Override
             public int compare(T first, T second) {
@@ -40,16 +39,9 @@ public class PQHeap<T extends Comparable<? super T>> implements PriorityQueue {
      */
     public PQHeap(Comparator<T> compare) {
         this.heap = new ArrayList<T>();
-        this.heap.add(null);
         this.comp = compare;
     }
-    /** Main Method. 
-     * @param args Commandline arguments
-     */
-    public static void main(String[] args) {
-        // TODO Auto-generated method stub
-
-    }
+    
     /**
      * Checks if a part of the heap is a leaf.
      * @param i index to look at
@@ -66,8 +58,11 @@ public class PQHeap<T extends Comparable<? super T>> implements PriorityQueue {
     private int parent(int i) {
         if (i <= 0) {
             return -1;
+        } else if (i % 2 == 0) {
+            return (i / 2) - 1;
+        } else {
+            return (i / 2);
         }
-        return (i - 1) / 2;
     }
     /**
      * Method to calculate left child of a node.
@@ -110,24 +105,28 @@ public class PQHeap<T extends Comparable<? super T>> implements PriorityQueue {
     @Override
     public void insert(Comparable t) {
         this.heap.add((T) t);
-        this.bubbleUp(this.size());
+        this.bubbleUp(this.size() - 1);
     }
 
     @Override
-    public void remove() throws QueueEmptyException {
-        if (this.size() == 1) {
+    public Comparable remove() throws QueueEmptyException {
+        if (this.size() == 0) {
             throw new QueueEmptyException();
         }  else {
-            this.swap(1, this.size() - 1);
+            this.swap(0, this.size() - 1);
             T temp = this.heap.remove(this.size() - 1);
-            this.bubbleDown(1);
+            this.bubbleDown(0);
+            return temp;
         }
-    
     }
 
     @Override
     public T peek() throws QueueEmptyException {
-        return this.heap.get(1);
+        if (this.size() == 0) {
+            throw new QueueEmptyException();
+        } else {
+            return this.heap.get(0);
+        }
     }
 
     /**
@@ -135,7 +134,7 @@ public class PQHeap<T extends Comparable<? super T>> implements PriorityQueue {
      * @return true if queue is empty
      */
     public boolean isEmpty() {
-        return this.heap.isEmpty();
+        return (this.size() == 0);
     }
 
     /**
@@ -149,14 +148,12 @@ public class PQHeap<T extends Comparable<? super T>> implements PriorityQueue {
     @Override
     public void clear() {
         this.heap = new ArrayList<T>();
-        this.heap.add(null);
     }
 
     @Override
     public void init(Collection values) {
         Iterator iter = values.iterator();
         this.heap = new ArrayList<T>();
-        this.heap.add(null);
         while (iter.hasNext()) {
             Object ele = iter.next();
             this.insert((T) ele);
@@ -174,11 +171,10 @@ public class PQHeap<T extends Comparable<? super T>> implements PriorityQueue {
             return false;     
         }
         // while curr is smaller than parent
-        while ((curr >= 0) && (this.heap.get(curr).compareTo(this.heap.get(
-                parent))) < 0) {
+        while (this.parent(curr) != -1 && this.heap.get(curr).compareTo(
+                this.heap.get(this.parent(curr))) > 0) {
             this.swap(curr, parent);
             curr = this.parent(curr);
-            parent = this.parent(curr);
         }
         return true;
     }
@@ -205,6 +201,19 @@ public class PQHeap<T extends Comparable<? super T>> implements PriorityQueue {
         }
         return true;
     }
-    
+    /**
+     * Print the heap.
+     */
+    public void print() {
+        for (int i = 0; i < this.heap.size(); i++) {
+            System.out.println("Index: " + i + " Value: " + this.heap.get(i));
+        }
+    }
+    /** Main Method. 
+     * @param args Commandline arguments
+     */
+    public static void main(String[] args) {
+        
+    }
 }
 
