@@ -1,4 +1,5 @@
 import java.awt.image.BufferedImage;
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -20,24 +21,26 @@ public class P4CStarter extends Distance{
      */
     static WGraph<Pixel> imageToGraph(BufferedImage image, Distance pd) {
         WGraphP4<Pixel> g = new WGraphP4<Pixel>();
-        GVertex<Pixel>[][] parray= new GVertex<Pixel>[image.getWidth()][image.getHeight()];
+        ArrayList<GVertex<Pixel>> plist= new ArrayList<GVertex<Pixel>>(image.getWidth()*image.getHeight());
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
-                Color mycolor = new Color(img.getRGB(i,j));
+                Color mycolor = new Color(image.getRGB(i,j));
                 Pixel newpixel = new Pixel(i, j,mycolor.getRed(),mycolor.getGreen(),mycolor.getBlue()); 
                 GVertex<Pixel> newv = new GVertex(newpixel, g.nextID());
                 g.addVertex(newv);
-                parray[i][j] = newv;
+                plist.add(image.getWidth()*i + image.getHeight()*j,newv);
             }
         }
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight() - 1 ; j++) {
-                g.addEdge(parray[i][j], parray[i][j+1], pd.distance(parray[i][j].data(), parray[i][j+1].data()));
+                int a = image.getWidth()*i + image.getHeight()*j;
+                g.addEdge(plist.get(a),plist.get(a+1), pd.distance(plist.get(a).data(), plist.get(a+1).data()));
             }
         }
         for (int i = 0; i < image.getWidth() - 1; i++) {
             for (int j = 0; j < image.getHeight(); j++) {
-                g.addEdge(parray[i][j], parray[i+1][j], pd.distance(parray[i][j].data(), parray[i+1][j].data()));
+                int a = image.getWidth()*i + image.getHeight()*j;
+                g.addEdge(plist.get(a),plist.get(a+image.getWidth()), pd.distance(plist.get(a).data(), plist.get(a+image.getWidth()).data()));
             }
         }
 
@@ -109,7 +112,13 @@ public class P4CStarter extends Distance{
                     image.setRGB(j, i, gray);
                 }
             }
-
+            WGraph<Pixel> h = WGraphP4();
+            for (WEdge<Pixel> tempog : res){
+                h.addEdge(tempog);
+            }
+            ArrayList<GVertex<Pixel>> already = new ArrayList<GVertex<Pixel>>();
+            for(Gvertex<Pixel> temp : res){
+                List<GVertex<Pixel>> tempo = 
             // After you have a spanning tree connected component x, 
             // you can generate an output image like this:
             for (GVertex<Pixel> i: x)  {
