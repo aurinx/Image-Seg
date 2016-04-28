@@ -176,7 +176,11 @@ public class WGraphP4<VT> implements WGraph<VT> {
   }
 
   public List<GVertex<VT>> allVertices() {
-      return this.verts;
+      ArrayList<GVertex<VT>> temp = new ArrayList<GVertex<VT>>();
+      for (GVertex<VT> temp2: this.verts){
+          temp.add(temp2);
+      }
+      return temp;
   }
 
   public List<GVertex<VT>> depthFirst(GVertex<VT> v) {

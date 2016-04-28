@@ -8,6 +8,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.PriorityQueue;
 
 
 public class P4CStarter{
@@ -28,19 +29,19 @@ public class P4CStarter{
                 Pixel newpixel = new Pixel(i, j,mycolor.getRed(),mycolor.getGreen(),mycolor.getBlue(), mycolor); 
                 GVertex<Pixel> newv = new GVertex(newpixel, g.nextID());
                 g.addVertex(newv);
-                plist.add(image.getWidth()*i + j,newv);
+                plist.add(image.getHeight()*i + j,newv);
             }
         }
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight() - 1 ; j++) {
-                int a = image.getWidth()*i + j;
+                int a = image.getHeight()*i + j;
                 g.addEdge(plist.get(a),plist.get(a+1), pd.distance(plist.get(a).data(), plist.get(a+1).data()));
             }
         }
         for (int i = 0; i < image.getWidth() - 1; i++) {
             for (int j = 0; j < image.getHeight(); j++) {
-                int a = image.getWidth()*i + j;
-                g.addEdge(plist.get(a),plist.get(a+image.getWidth()), pd.distance(plist.get(a).data(), plist.get(a+image.getWidth()).data()));
+                int a = image.getHeight()*i + j;
+                g.addEdge(plist.get(a),plist.get(a+image.getHeight()), pd.distance(plist.get(a).data(), plist.get(a+image.getHeight()).data()));
             }
         }
         return g;
@@ -60,8 +61,12 @@ public class P4CStarter{
       List<GVertex<Pixel>> verti = g.allVertices();
       List<WEdge<Pixel>> edges = g.allEdges();
       Partition P = new Partition(verti.size()); 
-      PQHeap<WEdge<Pixel>> Q = new PQHeap<WEdge<Pixel>>();
-      Q.init(edges);
+      //PQHeap<WEdge<Pixel>> Q = new PQHeap<WEdge<Pixel>>();
+      PriorityQueue<WEdge<Pixel>> Q = new PriorityQueue<WEdge<Pixel>>();
+      //Q.init(edges);
+      for (WEdge<Pixel> temp7 : edges){ 
+          Q.add(temp7);
+      }
       for (GVertex<Pixel> temp2 : verti){
           newstuff.addVertex(temp2);
       }
@@ -71,7 +76,7 @@ public class P4CStarter{
       }
       while (Q.size() > 0) {
           WEdge<Pixel> temp = Q.peek();
-          Q.remove();
+          Q.poll();
           GVertex<Pixel> u = temp.source();
           GVertex<Pixel> v = temp.end();
           if(P.find(u.uniqueid()) != P.find(v.uniqueid())){
@@ -128,20 +133,14 @@ public class P4CStarter{
                    z++;
                    List<GVertex<Pixel>> innerlist = h.depthFirst(temp);
                    for(GVertex<Pixel> temp3 : innerlist){
-                       og1.remove(temp3);
+                      og1.remove(temp3);
                    }
                    for(GVertex<Pixel> i : innerlist) {
                        Pixel d = i.data();
                        image.setRGB(d.getx(), d.gety(), d.getrgb().getRGB()); // make it rgb
                    }
-                   File f = new File("output" + z +"png");
+                   File f = new File("output" + z +".png");
                    ImageIO.write(image,"png",f);
-
-
-
-
-
-
                  }
             }
             // After you have a spanning tree connected component x, 
