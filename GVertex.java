@@ -1,4 +1,5 @@
 /** Class to represent a vertex (in a graph).
+ * @param <VT> vertex generic
  */
 public class GVertex<VT> implements Comparable<GVertex> {
 
@@ -9,18 +10,24 @@ public class GVertex<VT> implements Comparable<GVertex> {
 
     /** Data stored in the vertex. */
     private VT data;
-    /** Unique number for each vertex*/
+    /** Unique number for each vertex.*/
     private int uniqueid;
     /** Create a new vertex.
      *  @param d the data to store in the node
      *  @param id the unique id of the node
      */
-    public GVertex (VT d, int id) {
+    public GVertex(VT d, int id) {
         this.data = d;
         this.num = id;
         this.uniqueid = -1;
     }
-    public GVertex (VT d, int id, int auniqueid) {
+    /**
+     * Create a new vertex with unique id.
+     * @param d data to store in the node
+     * @param id is the id of the vertex
+     * @param auniqueid graph's unique id for the vertex
+     */
+    public GVertex(VT d, int id, int auniqueid) {
         this.data = d;
         this.num = id;
         this.uniqueid = auniqueid;
@@ -32,13 +39,25 @@ public class GVertex<VT> implements Comparable<GVertex> {
     public int id() {
         return this.num;
     }
-    public VT data(){
+    /**
+     * Get data of the vertex.
+     * @return the data
+     */
+    public VT data() {
         return this.data;
     }
-    public int uniqueid(){
+    /**
+     * Get unique ID of vertex.
+     * @return the unique id
+     */
+    public int uniqueid() {
         return this.uniqueid;
     }
-    public void changeunique(int temp){
+    /**
+     * Change the unique id of a certain numbered vertex.
+     * @param temp number of the id
+     */
+    public void changeunique(int temp) {
         this.uniqueid = temp;
     }
     /** Get a string representation of the vertex.

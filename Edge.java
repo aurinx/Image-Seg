@@ -1,3 +1,11 @@
+/*
+ * Dimitri Nikitopoulos: dnikito1
+ * Aurin Chakravarty: achakr16
+ * Joo Sung Kim: jkim469
+ * Data Structures 600.226.02
+ * Dr. Selinski & Dr. Hager 
+ * Project 4
+ */
 /** Implementation of an edge class (for graphs), could be directed or not.
  */
 public class Edge {

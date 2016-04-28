@@ -1,8 +1,9 @@
 /** Implementation of an edge class (for graphs), could be directed or not.
  */
 
-import java.util.*;
-
+/**Makes an edge wieh comparable.
+  * @param <VT> an input object
+  */
 public class WEdge<VT> implements Comparable<WEdge> {
 
     /** Starting vertex of an WEdge. */
@@ -11,7 +12,7 @@ public class WEdge<VT> implements Comparable<WEdge> {
     private GVertex<VT> end;
     /** Whether or not the edge is directed. */
     private boolean directed;
-    /**The weight of the edge */
+    /**The weight of the edge. */
     private double weight;
     /** Create an undirected edge.
      *  @param u the start
@@ -35,7 +36,7 @@ public class WEdge<VT> implements Comparable<WEdge> {
         this.source = u;
         this.end = v;
         this.directed = dir;
-        this.weight = weight;
+        this.weight = inweight;
     }
 
     /** Is the edge directed.
@@ -112,20 +113,13 @@ public class WEdge<VT> implements Comparable<WEdge> {
     }
     @Override
     public int compareTo(WEdge other) {
-        if (this.weight < other.weight){
-             return -1;
-        }else{
-             return 1;
+        if (this.weight < other.weight) {
+            return -1;
+        } else {
+            return 1;
         }
     }
-/**    public class WEdgeComparator implements Comparator<WEdge> {
-            @Override
-            public int compare(WEdge o1, WEdge o2) {
-                Double a = o1.weight();
-                return a.compareTo(o2.weight());
-            }
-    }
 
-*/
+
 }
 
