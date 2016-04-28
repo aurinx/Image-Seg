@@ -3,7 +3,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
-
 public class MaxPQHeap<T extends Comparable<? super T>> implements MaxPriorityQueue {
 
     private static final int DEFAULT_SIZE = 10;
