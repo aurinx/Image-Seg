@@ -12,6 +12,8 @@ public class WGraphP4<VT> implements WGraph<VT> {
   private ArrayList<GVertex<VT>> verts; // list of vertex
   private int numEdge; // num of edges
   private int uniques;
+  private int height;
+  private int width;
   // No real constructor neede
 
   // Initialize the graph with max n vertices
@@ -22,6 +24,16 @@ public class WGraphP4<VT> implements WGraph<VT> {
     numEdge = 0;
     nextID = 0;
     uniques = 0;
+  }
+  public WGraphP4(int width1, int height1) {
+    vertedges = new ArrayList<ArrayList<WEdge<VT>>>(height1*width1);
+    //add list to each vertex
+    verts = new ArrayList<GVertex<VT>>(height1*width1);
+    numEdge = 0;
+    nextID = 0;
+    uniques = 0;
+    height = height1;
+    width = width1;
   }
 
 
@@ -44,13 +56,13 @@ public class WGraphP4<VT> implements WGraph<VT> {
   }
 
   public boolean addVertex(GVertex<VT> v) {
-      if(v.uniqueid() != -1){
-          if(v.uniqueid() >= uniques){
-              v.changeunique(uniques++);
-          } else {
-              return false;
-          }
-      }
+      //if(v.uniqueid() != -1){
+      //    if(v.uniqueid() >= uniques){
+      //        v.changeunique(uniques++);
+      //    } else {
+      //        return false;
+      //    }
+//      }
       if(v.uniqueid() == -1){
           v.changeunique(uniques++);
       }
@@ -70,15 +82,19 @@ public class WGraphP4<VT> implements WGraph<VT> {
   }
   public boolean addEdge(GVertex<VT> v, GVertex<VT> u, double weight) {
       boolean success = true;
-      if(!this.verts.contains(v)) // if verts does not contain begin vertex yet
-          success = this.addVertex(v); //add vertex to vert
-      if(success && !this.verts.contains(u))//if verts does not contain end
-          success = this.addVertex(u);//add it
-      if (!success)
-          return false;
+      if(v.uniqueid() == -1)
+          this.addVertex(v);
+      if(u.uniqueid() == -1)
+          this.addVertex(u);
+      //if(!this.verts.contains(v)) // if verts does not contain begin vertex yet
+      //    success = this.addVertex(v); //add vertex to vert
+      //if(success && !this.verts.contains(u))//if verts does not contain end
+      //    success = this.addVertex(u);//add it
+      //if (!success)
+      //    return false;
       if (vertedges.get(v.uniqueid()) != null){ // if ths size of the arrlist at a vert is not 0
          int a = 0;
-         for (WEdge<VT> temp : vertedges.get(v.uniqueid())) { // see if the dege is there
+         for (WEdge<VT> temp : vertedges.get(v.uniqueid())) { // see if the edege is there
              if (temp.end() == u)
                  a = 1;
          }
@@ -203,7 +219,7 @@ public class WGraphP4<VT> implements WGraph<VT> {
   public List<WEdge<VT>> incidentEdges(GVertex<VT> v) {
       return vertedges.get(v.uniqueid());
   }
-  public List<WEdge<VT>> Kruskals() {
+/**  public List<WEdge<VT>> Kruskals() {
       WGraphP4<VT> newstuff = new WGraphP4();
       List<GVertex<VT>> verti = this.allVertices();
       List<WEdge<VT>> edges = this.allEdges();
@@ -221,5 +237,5 @@ public class WGraphP4<VT> implements WGraph<VT> {
           }
       }
       return newstuff.allEdges();
-  }
+  }*/
 }

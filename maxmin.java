@@ -83,7 +83,6 @@ public class maxmin { // this stores max rgb for a set. this is stored in an arr
    }
    public int diffr(){
        int red = this.redmax - this.redmin;
-       int green = this.greenmax - this.greenmin;
        return red;
    }
    public int diffg(){

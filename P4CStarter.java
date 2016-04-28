@@ -20,29 +20,42 @@ public class P4CStarter{
      *  @return the graph that was created
      */
     static WGraphP4<Pixel> imageToGraph(BufferedImage image, PixelDistance pd) {
-        WGraphP4<Pixel> g = new WGraphP4<Pixel>();
-        ArrayList<GVertex<Pixel>> plist= new ArrayList<GVertex<Pixel>>(image.getWidth()*image.getHeight());
+        WGraphP4<Pixel> g = new WGraphP4<Pixel>();//image.getWidth(), image.getHeight());
+        ArrayList<ArrayList<GVertex<Pixel>>> plist= new ArrayList<ArrayList<GVertex<Pixel>>>(image.getWidth());
+        System.out.println("After start" + System.currentTimeMillis());
+        for (int i =0; i < image.getWidth(); i++) {
+            plist.add(new ArrayList<GVertex<Pixel>>(image.getHeight()));
+        }
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
                 Color mycolor = new Color(image.getRGB(i,j));
                 Pixel newpixel = new Pixel(i, j,mycolor.getRed(),mycolor.getGreen(),mycolor.getBlue(), mycolor); 
                 GVertex<Pixel> newv = new GVertex(newpixel, g.nextID());
                 g.addVertex(newv);
-                plist.add(image.getHeight()*i + j,newv);
+                plist.get(i).add(newv);
             }
         }
+            System.out.println("After array" + System.currentTimeMillis());
+
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight() - 1 ; j++) {
-                int a = image.getHeight()*i + j;
-                g.addEdge(plist.get(a),plist.get(a+1), pd.distance(plist.get(a).data(), plist.get(a+1).data()));
+                GVertex<Pixel> a1 = plist.get(i).get(j);
+                GVertex<Pixel> a2 = plist.get(i).get(j+1);
+                g.addEdge(a1,a2,pd.distance(a1.data(), a2.data()));
             }
         }
+            System.out.println("After h" + System.currentTimeMillis());
+
         for (int i = 0; i < image.getWidth() - 1; i++) {
             for (int j = 0; j < image.getHeight(); j++) {
-                int a = image.getHeight()*i + j;
-                g.addEdge(plist.get(a),plist.get(a+image.getHeight()), pd.distance(plist.get(a).data(), plist.get(a+image.getHeight()).data()));
+                GVertex<Pixel> a1 = plist.get(i).get(j);
+                GVertex<Pixel> a2 = plist.get(i+1).get(j);
+                g.addEdge(a1,a2,pd.distance(a1.data(), a2.data()));
+
             }
         }
+            System.out.println("After w" + System.currentTimeMillis());
+
         return g;
 
     }
@@ -100,7 +113,7 @@ public class P4CStarter{
     }
 
     public static void main(String[] args) {
-
+    long StartTime = System.currentTimeMillis();
         final int gray = 0x202020;
 
         try {
@@ -108,7 +121,9 @@ public class P4CStarter{
 
             BufferedImage image = ImageIO.read(new File(args[0]));
             WGraphP4<Pixel> g = imageToGraph(image, new PixelDistance());
+            System.out.println("After image" + System.currentTimeMillis());
             List<WEdge<Pixel>> res = segmenter(g, Double.parseDouble(args[1]));
+            System.out.println("After res" + System.currentTimeMillis());
 
             System.out.print("result =  " + res.size() + "\n");
             System.out.print("NSegments =  "
@@ -121,6 +136,9 @@ public class P4CStarter{
                 }
             }
             WGraphP4<Pixel> h = new WGraphP4<Pixel>();
+            for(GVertex<Pixel> temp22: g.allVertices()){
+                h.addVertex(temp22);
+            }
             for (WEdge<Pixel> tempog : res){
                 h.addEdge(tempog);
             }
@@ -129,19 +147,25 @@ public class P4CStarter{
             int z = 0;
             for(GVertex<Pixel> temp : og){
                 if(og1.contains(temp)){
-                   z++;
                    List<GVertex<Pixel>> innerlist = h.depthFirst(temp);
                    for(GVertex<Pixel> temp3 : innerlist){
                       og1.remove(temp3);
                    }
-                   for(GVertex<Pixel> i : innerlist) {
-                       Pixel d = i.data();
-                       image.setRGB(d.getx(), d.gety(), d.getrgb().getRGB()); // make it rgb
+                   if(innerlist.size() > 500){
+                       z++;
+                       for(GVertex<Pixel> i : innerlist) {
+                           Pixel d = i.data();
+                           image.setRGB(d.getx(), d.gety(), d.getrgb().getRGB()); // make it rgb
+                       }
+                       File f = new File("output" + z +".png");
+                       ImageIO.write(image,"png",f);
                    }
-                   File f = new File("output" + z +".png");
-                   ImageIO.write(image,"png",f);
-                 }
+                }
             }
+                System.out.println("After res" + System.currentTimeMillis());
+
+                System.out.println(z);
+
             // After you have a spanning tree connected component x, 
             // you can generate an output image like this:
             // You'll need to do that for each connected component,
