@@ -73,7 +73,7 @@ public class P4CStarter{
       List<GVertex<Pixel>> verti = g.allVertices();
       List<WEdge<Pixel>> edges = g.allEdges();
       Partition P = new Partition(verti.size()); 
-      //PQHeap<WEdge<Pixel>> Q = new PQHeap<WEdge<Pixel>>();
+//      PQHeap<WEdge<Pixel>> Q = new PQHeap<WEdge<Pixel>>();
       PriorityQueue<WEdge<Pixel>> Q = new PriorityQueue<WEdge<Pixel>>();
 //      Q.init(edges);
       for (WEdge<Pixel> temp7 : edges){ 
@@ -92,13 +92,15 @@ public class P4CStarter{
           GVertex<Pixel> u = temp.source();
           GVertex<Pixel> v = temp.end();
           if(P.find(u.uniqueid()) != P.find(v.uniqueid())){
+
               maxmin mmu = mmlist.get(P.find(u.uniqueid())); // uses partition to get to root
               maxmin mmv = mmlist.get(P.find(v.uniqueid())); // uses partition to get to root
-              if((double)mmu.diffrc(mmv) <= (Math.min(mmu.diffr(), mmv.diffr()) + (double)K/(double)(mmu.getCount() + mmv.getCount()))){//if red
-                  if((double)mmu.diffgc(mmv) <= (Math.min(mmu.diffg(), mmv.diffg()) + (double)K/(double)(mmu.getCount() + mmv.getCount()))){//if green
-                      if(((double)mmu.diffbc(mmv) <= Math.min(mmu.diffb(), mmv.diffb()) + (double)K/(double)(mmu.getCount() + mmv.getCount()))){//if blue
+              if((double)mmu.diffrc(mmv) <= ((double)Math.min(mmu.diffr(), mmv.diffr()) + K/(double)(mmu.getCount() + mmv.getCount()))){//if red
+                  if((double)mmu.diffgc(mmv) <= ((double)Math.min(mmu.diffg(), mmv.diffg()) + K/(double)(mmu.getCount() + mmv.getCount()))){//if green
+                      if(((double)mmu.diffbc(mmv) <= (double)Math.min(mmu.diffb(), mmv.diffb()) + K/(double)(mmu.getCount() + mmv.getCount()))){//if blue
                           mmlist.get(P.find(u.uniqueid())).combine(mmlist.get(P.find(v.uniqueid())));//unions the two but really only edits the bigger root
                           newstuff.addEdge(temp);
+
                           P.union(u.uniqueid(),v.uniqueid()); // union them in partition
                       }
                   }
@@ -142,24 +144,35 @@ public class P4CStarter{
             for (WEdge<Pixel> tempog : res){
                 h.addEdge(tempog);
             }
+            System.out.println("after new graph" + System.currentTimeMillis());
             List<GVertex<Pixel>> og = h.allVertices();
             List<GVertex<Pixel>> og1 = h.allVertices();
+            int [] newarray = new int [og.size()];
+            for (int i = 0; i < newarray.length; i++)
+                newarray[i] = 0;
             int z = 0;
             for(GVertex<Pixel> temp : og){
-                if(og1.contains(temp)){
+                if(newarray[temp.uniqueid()] == 0){
                    List<GVertex<Pixel>> innerlist = h.depthFirst(temp);
                    for(GVertex<Pixel> temp3 : innerlist){
-                      og1.remove(temp3);
+                      newarray[temp3.uniqueid()] =1;
                    }
-                   if(innerlist.size() > 500){
+                   if(innerlist.size() > 250){
                        z++;
                        for(GVertex<Pixel> i : innerlist) {
-                           Pixel d = i.data();
-                           image.setRGB(d.getx(), d.gety(), d.getrgb().getRGB()); // make it rgb
+//                           Pixel d = i.data();
+//                           image.setRGB(d.getx(), d.gety(), d.getrgb().getRGB()); // make it rgb
                        }
                        File f = new File("output" + z +".png");
                        ImageIO.write(image,"png",f);
+                       for (int i = 0; i < image.getHeight(); i++) {
+                          for (int j = 0; j < image.getWidth(); j++) {
+                          image.setRGB(j, i, gray);
+                          }
+                       }
+
                    }
+                } else {
                 }
             }
                 System.out.println("After res" + System.currentTimeMillis());

@@ -184,7 +184,7 @@ public class WGraphP4<VT> implements WGraph<VT> {
       for (ArrayList<WEdge<VT>> temp : vertedges) {
           for (WEdge<VT> temp1 : temp) {
               if (temp1.source().uniqueid() > temp1.end().uniqueid()){
-                  edges.add(new WEdge<VT>(temp1.source(), temp1.end(), temp1.weight()));
+                  edges.add(temp1);
               }
           }
       }
