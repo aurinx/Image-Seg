@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 
-public class P4CStarter extends Distance{
+public class P4CStarter{
 
      static int K = 10;
     /** Convert an image to a graph of Pixels with edges between
@@ -19,7 +19,7 @@ public class P4CStarter extends Distance{
      *  @param pd the distance object for pixels
      *  @return the graph that was created
      */
-    static WGraph<Pixel> imageToGraph(BufferedImage image, Distance pd) {
+    static WGraphP4<Pixel> imageToGraph(BufferedImage image, PixelDistance pd) {
         WGraphP4<Pixel> g = new WGraphP4<Pixel>();
         ArrayList<GVertex<Pixel>> plist= new ArrayList<GVertex<Pixel>>(image.getWidth()*image.getHeight());
         for (int i = 0; i < image.getWidth(); i++) {
@@ -28,21 +28,22 @@ public class P4CStarter extends Distance{
                 Pixel newpixel = new Pixel(i, j,mycolor.getRed(),mycolor.getGreen(),mycolor.getBlue(), mycolor); 
                 GVertex<Pixel> newv = new GVertex(newpixel, g.nextID());
                 g.addVertex(newv);
-                plist.add(image.getWidth()*i + image.getHeight()*j,newv);
+                plist.add(image.getWidth()*i + j,newv);
             }
         }
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight() - 1 ; j++) {
-                int a = image.getWidth()*i + image.getHeight()*j;
+                int a = image.getWidth()*i + j;
                 g.addEdge(plist.get(a),plist.get(a+1), pd.distance(plist.get(a).data(), plist.get(a+1).data()));
             }
         }
         for (int i = 0; i < image.getWidth() - 1; i++) {
             for (int j = 0; j < image.getHeight(); j++) {
-                int a = image.getWidth()*i + image.getHeight()*j;
+                int a = image.getWidth()*i + j;
                 g.addEdge(plist.get(a),plist.get(a+image.getWidth()), pd.distance(plist.get(a).data(), plist.get(a+image.getWidth()).data()));
             }
         }
+        return g;
 
     }
 
