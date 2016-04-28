@@ -45,8 +45,12 @@ public class WGraphP4<VT> implements WGraph<VT> {
 
   public boolean addVertex(GVertex<VT> v) {
       if(v.uniqueid() != -1){
-          return false;
-      } 
+          if(v.uniqueid() >= uniques){
+              v.changeunique(uniques++);
+          } else {
+              return false;
+          }
+      }
       if(v.uniqueid() == -1){
           v.changeunique(uniques++);
       }

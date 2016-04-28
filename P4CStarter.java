@@ -25,7 +25,7 @@ public class P4CStarter extends Distance{
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
                 Color mycolor = new Color(image.getRGB(i,j));
-                Pixel newpixel = new Pixel(i, j,mycolor.getRed(),mycolor.getGreen(),mycolor.getBlue()); 
+                Pixel newpixel = new Pixel(i, j,mycolor.getRed(),mycolor.getGreen(),mycolor.getBlue(), mycolor); 
                 GVertex<Pixel> newv = new GVertex(newpixel, g.nextID());
                 g.addVertex(newv);
                 plist.add(image.getWidth()*i + image.getHeight()*j,newv);
@@ -61,6 +61,9 @@ public class P4CStarter extends Distance{
       Partition P = new Partition(verti.size()); 
       PQHeap<WEdge<Pixel>> Q = new PQHeap<WEdge<Pixel>>();
       Q.init(edges);
+      for (GVertex<Pixel> temp2 : verti){
+          newstuff.addVertex(temp2);
+      }
       ArrayList<maxmin> mmlist = new ArrayList<maxmin>(); //max an arraylist of maxmin class according to unique id
       for (int i = 0; i < verti.size(); i++){ // add to mm to list
           mmlist.add(i, new maxmin(verti.get(i)));
@@ -71,13 +74,13 @@ public class P4CStarter extends Distance{
           GVertex<Pixel> u = temp.source();
           GVertex<Pixel> v = temp.end();
           if(P.find(u.uniqueid()) != P.find(v.uniqueid())){
-              newstuff.addEdge(temp);
               maxmin mmu = mmlist.get(P.find(u.uniqueid())); // uses partition to get to root
               maxmin mmv = mmlist.get(P.find(v.uniqueid())); // uses partition to get to root
               if(mmu.diffrc(mmv) <= Math.min(mmu.diffr(), mmv.diffr()) + K/(mmu.getCount() + mmv.getCount())){//if red
                   if(mmu.diffgc(mmv) <= Math.min(mmu.diffg(), mmv.diffg()) + K/(mmu.getCount() + mmv.getCount())){//if green
                       if(mmu.diffbc(mmv) <= Math.min(mmu.diffb(), mmv.diffb()) + K/(mmu.getCount() + mmv.getCount())){//if blue
                           mmlist.get(P.find(u.uniqueid())).combine(mmlist.get(P.find(v.uniqueid())));//unions the two but really only edits the bigger root
+                          newstuff.addEdge(temp);
                           P.union(u.uniqueid(),v.uniqueid()); // union them in partition
                       }
                   }
@@ -99,7 +102,7 @@ public class P4CStarter extends Distance{
           // the line that reads the image file
 
             BufferedImage image = ImageIO.read(new File(args[0]));
-            WGraph<Pixel> g = imageToGraph(image, new PixelDistance());
+            WGraphP4<Pixel> g = imageToGraph(image, new PixelDistance());
             List<WEdge<Pixel>> res = segmenter(g, Double.parseDouble(args[1]));
 
             System.out.print("result =  " + res.size() + "\n");
@@ -112,23 +115,36 @@ public class P4CStarter extends Distance{
                     image.setRGB(j, i, gray);
                 }
             }
-            WGraph<Pixel> h = WGraphP4();
+            WGraphP4<Pixel> h = new WGraphP4<Pixel>();
             for (WEdge<Pixel> tempog : res){
                 h.addEdge(tempog);
             }
-            ArrayList<GVertex<Pixel>> already = new ArrayList<GVertex<Pixel>>();
-            for(Gvertex<Pixel> temp : res){
-                List<GVertex<Pixel>> tempo = 
+            List<GVertex<Pixel>> og = h.allVertices();
+            List<GVertex<Pixel>> og1 = h.allVertices();
+            int z = 0;
+            for(GVertex<Pixel> temp : og){
+                if(og1.contains(temp)){
+                   z++;
+                   List<GVertex<Pixel>> innerlist = h.depthFirst(temp);
+                   for(GVertex<Pixel> temp3 : innerlist){
+                       og1.remove(temp3);
+                   }
+                   for(GVertex<Pixel> i : innerlist) {
+                       Pixel d = i.data();
+                       image.setRGB(d.getx(), d.gety(), d.getrgb().getRGB()); // make it rgb
+                   }
+                   File f = new File("output" + z +"png");
+                   ImageIO.write(image,"png",f);
+
+
+
+
+
+
+                 }
+            }
             // After you have a spanning tree connected component x, 
             // you can generate an output image like this:
-            for (GVertex<Pixel> i: x)  {
-                Pixel d = i.data();
-                image.setRGB(d.col(), d.row(), d.value());
-            }
-
-            File f = new File("output.png");
-            ImageIO.write(image, "png", f);
-
             // You'll need to do that for each connected component,
             // writing each one to a different file, clearing the
             // image buffer first
