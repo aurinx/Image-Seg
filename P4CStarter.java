@@ -25,7 +25,7 @@ public class P4CStarter{
         for (int i =0; i < image.getWidth(); i++) { // initialize all columnn list
             plist.add(new ArrayList<GVertex<Pixel>>(image.getHeight()));
         }
-        System.out.println("Start: " + System.currentTimeMillis());
+//        System.out.println("Start: " + System.currentTimeMillis());
         for (int i = 0; i < image.getWidth(); i++) { // make vertex with pixel for each pixel in image
             for (int j = 0; j < image.getHeight(); j++) {
                 Color mycolor = new Color(image.getRGB(i,j));
@@ -35,7 +35,7 @@ public class P4CStarter{
                 plist.get(i).add(newv);
             }
         }
-        System.out.println("Start: " + System.currentTimeMillis());
+//        System.out.println("Start: " + System.currentTimeMillis());
 
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight() - 1 ; j++) {
@@ -44,7 +44,7 @@ public class P4CStarter{
                 g.addEdge(a1,a2,pd.distance(a1.data(), a2.data()));
             }
         }
-        System.out.println("Start: " + System.currentTimeMillis());
+//        System.out.println("Start: " + System.currentTimeMillis());
 
         for (int i = 0; i < image.getWidth() - 1; i++) {
             for (int j = 0; j < image.getHeight(); j++) {
@@ -72,13 +72,13 @@ public class P4CStarter{
       List<GVertex<Pixel>> verti = g.allVertices();
       List<WEdge<Pixel>> edges = g.allEdges();
       Partition P = new Partition(verti.size()); 
-//      PQHeap<WEdge<Pixel>> Q = new PQHeap<WEdge<Pixel>>();
-      PriorityQueue<WEdge<Pixel>> Q = new PriorityQueue<WEdge<Pixel>>();
-//      Q.init(edges);
+      PQHeap<WEdge<Pixel>> Q = new PQHeap<WEdge<Pixel>>();
+//      PriorityQueue<WEdge<Pixel>> Q = new PriorityQueue<WEdge<Pixel>>();
+      Q.init(edges);
 
-      for (WEdge<Pixel> temp7 : edges){ 
-          Q.add(temp7);
-      }
+//      for (WEdge<Pixel> temp7 : edges){ 
+ //         Q.add(temp7);
+ //     }
 
       for (GVertex<Pixel> temp2 : verti){
           newstuff.addVertex(temp2);
@@ -91,7 +91,7 @@ public class P4CStarter{
       System.out.println(System.currentTimeMillis());
       while (Q.size() > 0) {
           WEdge<Pixel> temp = Q.peek();
-          Q.poll();
+          Q.remove();
           GVertex<Pixel> u = temp.source();
           GVertex<Pixel> v = temp.end();
           int a1 = P.find(u.uniqueid());
@@ -156,7 +156,6 @@ public class P4CStarter{
             a = System.currentTimeMillis();
             System.out.println("After newgraph " + (a - diff));
             List<GVertex<Pixel>> og = h.allVertices();
-            List<GVertex<Pixel>> og1 = h.allVertices();
             int [] newarray = new int [og.size()];
             for (int i = 0; i < newarray.length; i++)
                 newarray[i] = 0;
@@ -167,7 +166,7 @@ public class P4CStarter{
                    for(GVertex<Pixel> temp3 : innerlist){
                       newarray[temp3.uniqueid()] =1;
                    }
-                   if(innerlist.size() > 100){
+                   if(innerlist.size() > (double)og.size()*.05){
                        z++;
                        for(GVertex<Pixel> i : innerlist) {
                            Pixel d = i.data();
