@@ -135,7 +135,7 @@ public class PQHeap<T extends Comparable<? super T>> implements PriorityQueue {
      * @return true if queue is empty
      */
     public boolean isEmpty() {
-        return this.heap.isEmpty();
+        return (this.size() == 0);
     }
 
     /**
