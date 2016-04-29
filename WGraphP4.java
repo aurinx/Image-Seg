@@ -76,6 +76,9 @@ public class WGraphP4<VT> implements WGraph<VT> {
 
     @Override
     public boolean addVertex(GVertex<VT> v) {
+        if (v.uniqueid() < this.uniques && v.uniqueid() != -1) {
+            return false;
+        }
         if (v.uniqueid() == -1) {
             v.changeunique(this.uniques++);
         }

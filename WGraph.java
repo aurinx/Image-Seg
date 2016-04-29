@@ -107,6 +107,6 @@ public interface WGraph<VT> {
      *  implementing Kruskal's algorithm using fast union/finds.
      *  @return a list of the edges in the minimum spanning forest
      */
-//    List<WEdge<VT>> kruskals();
-   
+    List<WEdge<VT>> kruskals();
+
 }

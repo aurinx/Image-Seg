@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /** Program that breaks picture into different parts.*/
 final class P4CStarter {
     /** % pixels needed of image to print it.*/
-    static final double POINT5 = .05;
+    static final double POINT5 = 0;
 
     /**For javadocs.*/
     private P4CStarter() {
