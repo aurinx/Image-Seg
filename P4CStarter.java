@@ -29,7 +29,6 @@ final class P4CStarter {
         for (int i = 0; i < image.getWidth(); i++) { //init all column list
             plist.add(new ArrayList<GVertex<Pixel>>(image.getHeight()));
         }
-//        System.out.println("Start: " + System.currentTimeMillis());
         // make vertex for each pixel in image
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
@@ -41,8 +40,7 @@ final class P4CStarter {
                 plist.get(i).add(newv);
             }
         }
-//        System.out.println("Start: " + System.currentTimeMillis());
-
+        // add edges between up and down pixels, dont do the last row
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight() - 1; j++) {
                 GVertex<Pixel> a1 = plist.get(i).get(j);
@@ -50,8 +48,7 @@ final class P4CStarter {
                 g.addEdge(a1, a2, pd.distance(a1.data(), a2.data()));
             }
         }
-//        System.out.println("Start: " + System.currentTimeMillis());
-
+        // add edges between left and right pixels, dont do that last col
         for (int i = 0; i < image.getWidth() - 1; i++) {
             for (int j = 0; j < image.getHeight(); j++) {
                 GVertex<Pixel> a1 = plist.get(i).get(j);
@@ -104,12 +101,11 @@ final class P4CStarter {
         for (GVertex<Pixel> temp2 : verti) {
             newstuff.addVertex(temp2);
         }
-
+        // make a max min list that stores the max/min rgb values for a pixel
         ArrayList<MaxMin> mmlist = new ArrayList<MaxMin>(verti.size());
         for (int i = 0; i < verti.size(); i++) { // add to mm to list
             mmlist.add(i, new MaxMin(verti.get(i)));
         }
-        System.out.println(System.currentTimeMillis());
         while (newQueue.size() > 0) {
             WEdge<Pixel> temp = newQueue.peek();
             newQueue.remove();
@@ -132,7 +128,7 @@ final class P4CStarter {
                             , mmv.diffb()) + (kvalue / (double) (
                             mmu.getCount() + mmv.getCount())))) { //if blue
                             mmu.combine(mmv);
-                            newstuff.addEdge(temp);
+                            newstuff.addEdge(temp); // add the edge
                             newPartition.union(u.uniqueid(),
                                 v.uniqueid()); // union them in partition
                         }
@@ -151,25 +147,17 @@ final class P4CStarter {
       * @param args the input file name and k
       */
     public static void main(String[] args) {
-        long startTime = System.currentTimeMillis();
 
         try {
           // the line that reads the image file
-            long diff = System.currentTimeMillis();
-            long a;
 
             BufferedImage image = ImageIO.read(new File(args[0]));
             WGraphP4<Pixel> g = imageToGraph(image, new PixelDistance());
-            a = System.currentTimeMillis();
-            System.out.println("After image " + (a - diff));
             List<WEdge<Pixel>> res = segmenter(g, Double.parseDouble(args[1]));
-            diff = System.currentTimeMillis();
-            System.out.println("After res " + (diff - a));
             System.out.print("result =  " + res.size() + "\n");
             System.out.print("NSegments =  "
                              + (g.numVerts() - res.size()) + "\n");
-
-            // make a background image to put a segment into
+            // make new graph that has the edges in a forest
             WGraphP4<Pixel> h = new WGraphP4<Pixel>();
             for (GVertex<Pixel> temp22: g.allVertices()) {
                 h.addVertex(temp22);
@@ -179,8 +167,6 @@ final class P4CStarter {
             }
             image = makegray(image);
 
-            a = System.currentTimeMillis();
-            System.out.println("After newgraph " + (a - diff));
             List<GVertex<Pixel>> og = h.allVertices();
             int[] newarray = new int[og.size()];
             for (int i = 0; i < newarray.length; i++) {
@@ -193,7 +179,7 @@ final class P4CStarter {
                     for (GVertex<Pixel> temp3 : innerlist) {
                         newarray[temp3.uniqueid()] = 1;
                     }
-                    if (innerlist.size() > (double) og.size() * POINT5) {
+                    if (innerlist.size() > (double) 10 ){//og.size() * POINT5) {
                         z++;
                         for (GVertex<Pixel> i : innerlist) {
                             Pixel d = i.data();
@@ -209,7 +195,8 @@ final class P4CStarter {
             }
             //diff = System.currentTimeMillis();
             //System.out.println("After out " + (diff - a));
-            System.out.println(z);
+            // Print number of pictures made
+            System.out.println("Number of Outputs: "+ z);
 
 
         } catch (IOException e) {

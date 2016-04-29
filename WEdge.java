@@ -111,7 +111,7 @@ public class WEdge<VT> implements Comparable<WEdge> {
     public int hashCode() {
         return this.toString().hashCode();
     }
-    @Override
+    @Override // compares two edges based on their weights
     public int compareTo(WEdge other) {
         if (this.weight < other.weight) {
             return -1;

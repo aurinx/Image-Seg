@@ -5,9 +5,8 @@ public class GVertex<VT> implements Comparable<GVertex> {
 
     /* Note that the nextID variable had to be moved to the graph class. */
 
-    /** GVertex unique ID number. */
+    /** GVertex  ID number. */
     private int num;
-
     /** Data stored in the vertex. */
     private VT data;
     /** Unique number for each vertex.*/
@@ -19,7 +18,7 @@ public class GVertex<VT> implements Comparable<GVertex> {
     public GVertex(VT d, int id) {
         this.data = d;
         this.num = id;
-        this.uniqueid = -1;
+        this.uniqueid = -1; // set to -1 until it enters a graph
     }
     /**
      * Create a new vertex with unique id.
@@ -91,6 +90,6 @@ public class GVertex<VT> implements Comparable<GVertex> {
      *  @return negative if this < other, 0 if equal, positive if this > other
      */
     public int compareTo(GVertex other) {
-        return this.num -  other.num;
+        return this.uniqueid -  other.uniqueid;
     }
 }

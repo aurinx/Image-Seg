@@ -52,10 +52,10 @@ public class WGraphP4<VT> implements WGraph<VT> {
     }
 
     @Override
-    public int numEdges() { 
-        return this.numEdge; 
+    public int numEdges() {
+        return this.numEdge;
     }
-    
+
     @Override
     public int numVerts() {
         return this.verts.size();
@@ -66,20 +66,20 @@ public class WGraphP4<VT> implements WGraph<VT> {
         return this.nextID++;
     }
 
-    @Override
-    public boolean addVertex(VT data) { 
+    @Override // adds vertex to graph and gives it the next unique number
+    public boolean addVertex(VT data) {
         GVertex<VT> v = new GVertex(data, this.nextID++, this.uniques++);
         this.verts.add(v.uniqueid(), v); //add vertex with data, and next id 
         this.vertedges.add(v.uniqueid(), new ArrayList<WEdge<VT>>());
         return true;
     }
 
-    @Override
+    @Override // sees if the inserted
     public boolean addVertex(GVertex<VT> v) {
         if (v.uniqueid() < this.uniques && v.uniqueid() != -1) {
-            return false;
-        }
-        if (v.uniqueid() == -1) {
+            return false; // if the unique id is already used, false
+        } // if the gvertex is not in graph yet, it must be -1 so add it
+        if (v.uniqueid() == -1) { // insert the vertex and change uniqueid
             v.changeunique(this.uniques++);
         }
         this.verts.add(v.uniqueid(), v); // add vertex to vertex list
@@ -87,7 +87,7 @@ public class WGraphP4<VT> implements WGraph<VT> {
         return true;
     }
 
-    @Override
+    @Override //  add an edge sees if it is added
     public boolean addEdge(WEdge<VT> e) {
         boolean added = false;
         added = this.addEdge(e.source(), e.end(), e.weight());
@@ -97,11 +97,11 @@ public class WGraphP4<VT> implements WGraph<VT> {
     /** Helmer method to get the index of vertex in verts list.
      * @param v Vertex we are trying to figure out
      * @return returns the position of v in verts
-     */
+     */ // get the position in the list
     private int positioninlist(GVertex<VT> v) {
-        return this.verts.indexOf(v);
+        return v.uniqueid();
     }
-
+    //
     @Override
     public boolean addEdge(GVertex<VT> v, GVertex<VT> u, double weight) {
         boolean success = true;
@@ -110,31 +110,26 @@ public class WGraphP4<VT> implements WGraph<VT> {
         }
         if (u.uniqueid() == -1) {
             this.addVertex(u);
-        }
-        if (this.vertedges.get(v.uniqueid()) != null) { 
-            int a = 0;
-            for (WEdge<VT> temp : this.vertedges.get(v.uniqueid())) {
-                if (temp.end() == u) {
-                    a = 1;
-                    return false;
-                }
+        } // see if both vertex are in the loop
+        int a = 0;
+        for (WEdge<VT> temp : this.vertedges.get(v.uniqueid())) {
+            if (temp.end() == u) {
+                a = 1;
+                return false;
             }
-            this.vertedges.get(v.uniqueid())
-                .add(new WEdge<VT>(v, u, weight)); //add edge to list
         }
-        if (this.vertedges.get(u.uniqueid()) != null) { //redo
-            int b = 0;
-            for (WEdge<VT> temp2 : this.vertedges.get(u.uniqueid())) {
-                if (temp2.end() == v) {
-                    b = 1;
-                    return false;
-                }
+        this.vertedges.get(v.uniqueid())
+            .add(new WEdge<VT>(v, u, weight)); //add edge to list
+        int b = 0;
+        for (WEdge<VT> temp2 : this.vertedges.get(u.uniqueid())) {
+            if (temp2.end() == v) {
+                b = 1;
+                return false;
             }
-            this.vertedges.get(u.uniqueid()).add(new WEdge<VT>(u, v, weight));
-            this.numEdge++;
-            return true;
         }
-        return false;
+        this.vertedges.get(u.uniqueid()).add(new WEdge<VT>(u, v, weight));
+        this.numEdge++;
+        return true;
     }
 
     @Override
@@ -216,8 +211,8 @@ public class WGraphP4<VT> implements WGraph<VT> {
     @Override
     public List<WEdge<VT>> allEdges() {
         int nv = this.numVerts();
-        ArrayList<WEdge<VT>> edges = new ArrayList<WEdge<VT>>();
-        for (ArrayList<WEdge<VT>> temp : this.vertedges) {
+        ArrayList<WEdge<VT>> edges = new ArrayList<WEdge<VT>>(this.numEdges());
+        for (List<WEdge<VT>> temp : this.vertedges) {
             for (WEdge<VT> temp1 : temp) {
                 if (temp1.source().uniqueid() > temp1.end().uniqueid()) {
                     edges.add(temp1);
@@ -229,7 +224,8 @@ public class WGraphP4<VT> implements WGraph<VT> {
 
     @Override
     public List<GVertex<VT>> allVertices() {
-        ArrayList<GVertex<VT>> temp = new ArrayList<GVertex<VT>>();
+        ArrayList<GVertex<VT>> temp = new
+            ArrayList<GVertex<VT>>(this.numVerts());
         for (GVertex<VT> temp2: this.verts) {
             temp.add(temp2);
         }
