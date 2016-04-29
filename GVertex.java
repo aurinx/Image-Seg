@@ -1,4 +1,4 @@
-** Class to represent a vertex (in a graph).
+/** Class to represent a vertex (in a graph).
  * @param <VT> vertex generic
  */
 public class GVertex<VT> implements Comparable<GVertex> {

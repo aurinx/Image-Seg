@@ -105,9 +105,9 @@ final class P4CStarter {
             newstuff.addVertex(temp2);
         }
 
-        ArrayList<maxmin> mmlist = new ArrayList<maxmin>(verti.size());
+        ArrayList<MaxMin> mmlist = new ArrayList<MaxMin>(verti.size());
         for (int i = 0; i < verti.size(); i++) { // add to mm to list
-            mmlist.add(i, new maxmin(verti.get(i)));
+            mmlist.add(i, new MaxMin(verti.get(i)));
         }
         System.out.println(System.currentTimeMillis());
         while (newQueue.size() > 0) {
@@ -118,8 +118,8 @@ final class P4CStarter {
             int a1 = newPartition.find(u.uniqueid());
             int a2 = newPartition.find(v.uniqueid());
             if (a1 != a2) {
-                maxmin mmu = mmlist.get(a1); // uses partition to get to root
-                maxmin mmv = mmlist.get(a2); // uses partition to get to root
+                MaxMin mmu = mmlist.get(a1); // uses partition to get to root
+                MaxMin mmv = mmlist.get(a2); // uses partition to get to root
                 if ((double) mmu.diffrc(mmv) <= ((double) Math.min(mmu.diffr(),
                     mmv.diffr()) + (kvalue / (double) (mmu.getCount() + mmv.
                     getCount())))) { //if red
