@@ -1,0 +1,21 @@
+Project 4 README
+Aurin Chakravarty achakr16
+Dimitri Nikitopoulos dnikito1
+Joo Sung Kim jkim469
+Data Structures 600.226.02
+
+Overall Strategy:
+Reading over the entire assignment, we deliberated over the two approaches we could have taken: Doing part 1, 2, then 3 vs. 3 first then work backwards and maybe use inheritance. For us, it made sense to do the parts sequentially, and test each part after completing them. This way, everything would naturally build upon each other and we would have a clearer picture of how the program was being executed.
+
+Graph Implementation:
+As the assignment recommended, we made the new GVertex class so that we could use that for the WEdge class. The book had a lot of helpful implementation examples and  concepts helped with shaping the framework of this part of the assignment. We made a custom WGraphTest shortly after which tested each method in the graph implementation, as the one given to us did not test all of our helper methods.
+
+PQHeap Implementation:
+The implementation for the PQHeap was difficult at first, as we were using an arraylist with "null" put into position 0 whenever a PQHeap was initialized. We tried adapting our methods to this and found a lot of our tests were failing as we weren't manipulating some of the positions correctly. Eventually we just stuck with initializing a normal arraylist and adding items from that normally. This seemed to work out when it came to testing the heap with JUnit tests
+
+Another challenge we came across was using the comparator as a passed argument into a PQHeap constructor. We were unsure how to manipulate this to form the heap at first until we asked a couple TAs and fellow classmates about how they went about it and what they did. After that it was simple to test the methods involved and make sure they worked. We included PQHeapTest along with our files. 
+
+Images as Graphs
+
+
+
